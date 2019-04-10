@@ -1,0 +1,24 @@
+{
+  "name": "fancy-canvas",
+  "version": "0.0.0",
+  "description": "Functionality on top of HTML canvas element, including support for HiDPI and pixel-perfect rendering",
+  "scripts": {
+    "build": "tsc --project tsconfig.json && node ../tools/build-package-json package.json ../dist/fancy-canvas/package.json"
+  },
+  "keywords": [
+    "html",
+    "canvas",
+    "graphics",
+    "hidpi",
+    "pixel-perfect"
+  ],
+  "author": "smakarov@tradingview.com",
+  "license": "MIT",
+  "dependencies": {
+    "tslib": "^1.6.0"
+  },
+  "devDependencies": {
+    "typescript": "3.3.3333"
+  },
+  "private": true
+}

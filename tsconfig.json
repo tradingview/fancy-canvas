@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"strict": true,
+		"forceConsistentCasingInFileNames": true,
+		"importHelpers": true,
+		"noEmitOnError": true,
+		"noFallthroughCasesInSwitch": true,
+		"noImplicitReturns": true,
+		"noUnusedLocals": true,
+		"sourceMap": false,
+		"target": "es5",
+		"module": "es2015",
+		"lib": [
+			"es5",
+			"es2015.symbol.wellknown",
+			"dom"
+		]
+	}
+}

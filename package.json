@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "build": "npm run build:src && npm run build:examples",
+    "build:src": "npm run build --prefix src",
+    "build:examples": "npm run build --prefix examples/checkers"
+  },
+  "private": true
+}

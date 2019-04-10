@@ -1,0 +1,8 @@
+node_modules/
+
+# build output directories
+bin/
+dist/
+
+# rollup cache
+.rpt2_cache

@@ -1,0 +1,13 @@
+{
+  "scripts": {
+    "build": "rollup -c && copyfiles *.html *.css ../../bin/checkers"
+  },
+  "devDependencies": {
+    "copyfiles": "2.1.0",
+    "rollup": "^0.66.6",
+    "rollup-plugin-node-resolve": "^3.4.0",
+    "rollup-plugin-typescript2": "^0.17.2",
+    "typescript": "2.7.2"
+  },
+  "private": true
+}
