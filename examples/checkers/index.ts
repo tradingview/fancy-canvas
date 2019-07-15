@@ -18,6 +18,8 @@ window.onload = () => {
 		if (c instanceof HTMLCanvasElement) {
 			cnv1 = c;
 			binding1 = bindToDevicePixelRatio(c);
+			// Don't forget to unsubscribe if you are going to destroy binding or canvas
+			binding1.subscribeCanvasConfigured(() => window.requestAnimationFrame(renderFrame));
 		}
 	}
 
@@ -38,6 +40,8 @@ window.onmousemove = (ev: MouseEvent) => {
 	offset.x += ev.clientX - originalPoint.x;
 	offset.y += ev.clientY - originalPoint.y;
 	originalPoint = { x: ev.clientX, y: ev.clientY };
+
+	window.requestAnimationFrame(renderFrame);
 }
 
 function renderFrame() {
@@ -64,8 +68,6 @@ function renderFrame() {
 
 		drawScene(ctx, binding1.canvasSize);
 	}
-
-	window.requestAnimationFrame(renderFrame);
 }
 
 function drawScene(ctx: CanvasRenderingContext2D, canvasSize: Size) {

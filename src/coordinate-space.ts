@@ -3,6 +3,8 @@ export type Size = {
 	height: number;
 }
 
+export type CanvasConfiguredListener = (this: Binding) => void;
+
 export interface Binding {
 	destroy(): void;
 
@@ -11,6 +13,9 @@ export interface Binding {
 	*/
 	canvasSize: Size;
 	pixelRatio: number;
+
+	subscribeCanvasConfigured(listener: CanvasConfiguredListener): void;
+	unsubscribeCanvasConfigured(listener: CanvasConfiguredListener): void;
 }
 
 export function bindToDevicePixelRatio(canvas: HTMLCanvasElement): Binding {
@@ -22,6 +27,7 @@ class DevicePixelRatioBinding implements Binding {
 	private _canvasSize: Size;
 	private _resolutionMediaQueryList: MediaQueryList | null = null;
 	private _resolutionListener = (ev: MediaQueryListEvent) => this._onResolutionChanged();
+	private _canvasConfiguredListeners: CanvasConfiguredListener[] = [];
 	
 	public constructor(canvas: HTMLCanvasElement) {
 		this._canvas = canvas;
@@ -34,6 +40,7 @@ class DevicePixelRatioBinding implements Binding {
 	}
 
 	public destroy(): void {
+		this._canvasConfiguredListeners.length = 0;
 		this._uninstallResolutionListener();
 		(this._canvasSize as any) = null;
 		(this._canvas as any) = null;
@@ -61,12 +68,25 @@ class DevicePixelRatioBinding implements Binding {
 		return window.devicePixelRatio;
 	}
 
+	public subscribeCanvasConfigured(listener: CanvasConfiguredListener): void {
+		this._canvasConfiguredListeners.push(listener);
+	}
+
+	public unsubscribeCanvasConfigured(listener: CanvasConfiguredListener): void {
+		this._canvasConfiguredListeners = this._canvasConfiguredListeners.filter(l => l != listener);
+	}
+
 	private _configureCanvas(): void {
 		const ratio = this.pixelRatio;
 		this._canvas.style.width = `${this._canvasSize.width}px`;
 		this._canvas.style.height = `${this._canvasSize.height}px`;
 		this._canvas.width = this._canvasSize.width * ratio;
 		this._canvas.height = this._canvasSize.height * ratio;
+		this._emitCanvasConfigured();
+	}
+
+	private _emitCanvasConfigured(): void {
+		this._canvasConfiguredListeners.forEach(listener => listener.call(this));
 	}
 	
 	private _installResolutionListener(): void {
