@@ -12,7 +12,7 @@ export interface Binding {
 	 * Canvas element size in CSS pixels
 	*/
 	canvasSize: Size;
-	pixelRatio: number;
+	readonly pixelRatio: number;
 
 	subscribeCanvasConfigured(listener: CanvasConfiguredListener): void;
 	unsubscribeCanvasConfigured(listener: CanvasConfiguredListener): void;
@@ -23,12 +23,12 @@ export function bindToDevicePixelRatio(canvas: HTMLCanvasElement): Binding {
 }
 
 class DevicePixelRatioBinding implements Binding {
-	private _canvas: HTMLCanvasElement;
+	private readonly _canvas: HTMLCanvasElement;
 	private _canvasSize: Size;
 	private _resolutionMediaQueryList: MediaQueryList | null = null;
-	private _resolutionListener = (ev: MediaQueryListEvent) => this._onResolutionChanged();
+	private readonly _resolutionListener = (ev: MediaQueryListEvent) => this._onResolutionChanged();
 	private _canvasConfiguredListeners: CanvasConfiguredListener[] = [];
-	
+
 	public constructor(canvas: HTMLCanvasElement) {
 		this._canvas = canvas;
 		this._canvasSize = {
@@ -45,7 +45,7 @@ class DevicePixelRatioBinding implements Binding {
 		(this._canvasSize as any) = null;
 		(this._canvas as any) = null;
 	}
-	
+
 	public get canvasSize(): Size {
 		return this._canvasSize;
 	}
@@ -54,7 +54,7 @@ class DevicePixelRatioBinding implements Binding {
 		this._canvasSize = size;
 		this._configureCanvas();
 	}
-	
+
 	public get pixelRatio(): number {
 		if (this._canvas.ownerDocument == null) {
 			throw new Error('Invalid owner document specified for canvas');
@@ -88,7 +88,7 @@ class DevicePixelRatioBinding implements Binding {
 	private _emitCanvasConfigured(): void {
 		this._canvasConfiguredListeners.forEach(listener => listener.call(this));
 	}
-	
+
 	private _installResolutionListener(): void {
 		if (this._resolutionMediaQueryList !== null) {
 			throw new Error('Resolution listener is already installed');
