@@ -8,6 +8,7 @@ export type CanvasConfiguredListener = (this: Binding) => void;
 export interface Binding {
 	destroy(): void;
 
+	readonly canvas: HTMLCanvasElement;
 	/**
 	 * Canvas element size in CSS pixels
 	*/
@@ -44,6 +45,10 @@ class DevicePixelRatioBinding implements Binding {
 		this._uninstallResolutionListener();
 		(this._canvasSize as any) = null;
 		(this._canvas as any) = null;
+	}
+
+	public get canvas(): HTMLCanvasElement {
+		return this._canvas;
 	}
 
 	public get canvasSize(): Size {
