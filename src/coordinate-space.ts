@@ -12,7 +12,8 @@ export interface Binding {
 	/**
 	 * Canvas element size in CSS pixels
 	*/
-	canvasSize: Size;
+	readonly canvasSize: Size;
+	resizeCanvas(size: Size): void;
 	readonly pixelRatio: number;
 
 	subscribeCanvasConfigured(listener: CanvasConfiguredListener): void;
@@ -43,7 +44,6 @@ class DevicePixelRatioBinding implements Binding {
 	public destroy(): void {
 		this._canvasConfiguredListeners.length = 0;
 		this._uninstallResolutionListener();
-		(this._canvasSize as any) = null;
 		(this._canvas as any) = null;
 	}
 
@@ -52,11 +52,17 @@ class DevicePixelRatioBinding implements Binding {
 	}
 
 	public get canvasSize(): Size {
-		return this._canvasSize;
+		return { 
+			width: this._canvasSize.width,
+			height: this._canvasSize.height,
+		};
 	}
 
-	public set canvasSize(size: Size) {
-		this._canvasSize = size;
+	public resizeCanvas(size: Size): void {
+		this._canvasSize = {
+			width: size.width,
+			height: size.height,
+		};
 		this._configureCanvas();
 	}
 
