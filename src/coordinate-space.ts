@@ -67,16 +67,14 @@ class DevicePixelRatioBinding implements Binding {
 	}
 
 	public get pixelRatio(): number {
-		if (this._canvas.ownerDocument == null) {
-			throw new Error('Invalid owner document specified for canvas');
-		}
-
-		const window = this._canvas.ownerDocument.defaultView;
-		if (window == null) {
+		// According to DOM Level 2 Core specification, ownerDocument should never be null for HTMLCanvasElement
+		// see https://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#node-ownerDoc
+		const win = this._canvas.ownerDocument!.defaultView;
+		if (win == null) {
 			throw new Error('No window is associated with the canvas');
 		}
 
-		return window.devicePixelRatio;
+		return win.devicePixelRatio;
 	}
 
 	public subscribeCanvasConfigured(listener: CanvasConfiguredListener): void {
@@ -105,17 +103,15 @@ class DevicePixelRatioBinding implements Binding {
 			throw new Error('Resolution listener is already installed');
 		}
 
-		if (this._canvas.ownerDocument == null) {
-			throw new Error('Invalid owner document specified for canvas');
-		}
-
-		const window = this._canvas.ownerDocument.defaultView;
-		if (window == null) {
+		// According to DOM Level 2 Core specification, ownerDocument should never be null for HTMLCanvasElement
+		// see https://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#node-ownerDoc
+		const win = this._canvas.ownerDocument!.defaultView;
+		if (win == null) {
 			throw new Error('No window is associated with the canvas');
 		}
 
-		const dppx = window.devicePixelRatio;
-		this._resolutionMediaQueryList = window.matchMedia(`all and (resolution: ${dppx}dppx)`);
+		const dppx = win.devicePixelRatio;
+		this._resolutionMediaQueryList = win.matchMedia(`all and (resolution: ${dppx}dppx)`);
 		// IE and some versions of Edge do not support addEventListener/removeEventListener, and we are going to use the deprecated addListener/removeListener
 		this._resolutionMediaQueryList.addListener(this._resolutionListener);
 	}
