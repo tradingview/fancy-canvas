@@ -25,17 +25,17 @@ export function bindToDevicePixelRatio(canvas: HTMLCanvasElement): Binding {
 }
 
 class DevicePixelRatioBinding implements Binding {
-	private readonly _canvas: HTMLCanvasElement;
+	public readonly canvas: HTMLCanvasElement;
 	private _canvasSize: Size;
 	private _resolutionMediaQueryList: MediaQueryList | null = null;
 	private readonly _resolutionListener = (ev: MediaQueryListEvent) => this._onResolutionChanged();
 	private _canvasConfiguredListeners: CanvasConfiguredListener[] = [];
 
 	public constructor(canvas: HTMLCanvasElement) {
-		this._canvas = canvas;
+		this.canvas = canvas;
 		this._canvasSize = {
-			width: this._canvas.clientWidth,
-			height: this._canvas.clientHeight,
+			width: this.canvas.clientWidth,
+			height: this.canvas.clientHeight,
 		};
 		this._configureCanvas();
 		this._installResolutionListener();
@@ -44,11 +44,7 @@ class DevicePixelRatioBinding implements Binding {
 	public destroy(): void {
 		this._canvasConfiguredListeners.length = 0;
 		this._uninstallResolutionListener();
-		(this._canvas as any) = null;
-	}
-
-	public get canvas(): HTMLCanvasElement {
-		return this._canvas;
+		(this.canvas as any) = null;
 	}
 
 	public get canvasSize(): Size {
@@ -69,7 +65,7 @@ class DevicePixelRatioBinding implements Binding {
 	public get pixelRatio(): number {
 		// According to DOM Level 2 Core specification, ownerDocument should never be null for HTMLCanvasElement
 		// see https://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#node-ownerDoc
-		const win = this._canvas.ownerDocument!.defaultView;
+		const win = this.canvas.ownerDocument!.defaultView;
 		if (win == null) {
 			throw new Error('No window is associated with the canvas');
 		}
@@ -87,10 +83,10 @@ class DevicePixelRatioBinding implements Binding {
 
 	private _configureCanvas(): void {
 		const ratio = this.pixelRatio;
-		this._canvas.style.width = `${this._canvasSize.width}px`;
-		this._canvas.style.height = `${this._canvasSize.height}px`;
-		this._canvas.width = this._canvasSize.width * ratio;
-		this._canvas.height = this._canvasSize.height * ratio;
+		this.canvas.style.width = `${this._canvasSize.width}px`;
+		this.canvas.style.height = `${this._canvasSize.height}px`;
+		this.canvas.width = this._canvasSize.width * ratio;
+		this.canvas.height = this._canvasSize.height * ratio;
 		this._emitCanvasConfigured();
 	}
 
@@ -105,7 +101,7 @@ class DevicePixelRatioBinding implements Binding {
 
 		// According to DOM Level 2 Core specification, ownerDocument should never be null for HTMLCanvasElement
 		// see https://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#node-ownerDoc
-		const win = this._canvas.ownerDocument!.defaultView;
+		const win = this.canvas.ownerDocument!.defaultView;
 		if (win == null) {
 			throw new Error('No window is associated with the canvas');
 		}
