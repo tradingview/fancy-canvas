@@ -109,8 +109,7 @@ class DevicePixelRatioBinding implements Binding {
 		}
 
 		const dppx = window.devicePixelRatio;
-		const dpi = dppx * 96;
-		this._resolutionMediaQueryList = window.matchMedia(`screen and (min-resolution: ${dpi - 0.001}dpi) and (max-resolution: ${dpi + 0.001}dpi)`);
+		this._resolutionMediaQueryList = window.matchMedia(`all and (resolution: ${dppx}dppx)`);
 		// IE and some versions of Edge do not support addEventListener/removeEventListener, and we are going to use the deprecated addListener/removeListener
 		this._resolutionMediaQueryList.addListener(this._resolutionListener);
 	}
