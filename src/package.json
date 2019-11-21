@@ -14,9 +14,6 @@
   ],
   "author": "smakarov@tradingview.com",
   "license": "MIT",
-  "dependencies": {
-    "tslib": "^1.6.0"
-  },
   "devDependencies": {
     "typescript": "3.3.3333"
   },
