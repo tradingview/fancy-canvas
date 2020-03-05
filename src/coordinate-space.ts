@@ -20,23 +20,33 @@ export interface Binding {
 	unsubscribeCanvasConfigured(listener: CanvasConfiguredListener): void;
 }
 
-export function bindToDevicePixelRatio(canvas: HTMLCanvasElement): Binding {
-	return new DevicePixelRatioBinding(canvas);
+export interface BindingOptions {
+	allowDownsampling: boolean;
+}
+
+const defaultBindingOptions = {
+	allowDownsampling: true,
+};
+
+export function bindToDevicePixelRatio(canvas: HTMLCanvasElement, options: BindingOptions = defaultBindingOptions): Binding {
+	return new DevicePixelRatioBinding(canvas, options);
 }
 
 class DevicePixelRatioBinding implements Binding {
 	public readonly canvas: HTMLCanvasElement;
 	private _canvasSize: Size;
+	private _options: BindingOptions;
 	private _resolutionMediaQueryList: MediaQueryList | null = null;
 	private readonly _resolutionListener = (ev: MediaQueryListEvent) => this._onResolutionChanged();
 	private _canvasConfiguredListeners: CanvasConfiguredListener[] = [];
 
-	public constructor(canvas: HTMLCanvasElement) {
+	public constructor(canvas: HTMLCanvasElement, options: BindingOptions) {
 		this.canvas = canvas;
 		this._canvasSize = {
 			width: this.canvas.clientWidth,
 			height: this.canvas.clientHeight,
 		};
+		this._options = options;
 		this._configureCanvas();
 		this._installResolutionListener();
 	}
@@ -48,7 +58,7 @@ class DevicePixelRatioBinding implements Binding {
 	}
 
 	public get canvasSize(): Size {
-		return { 
+		return {
 			width: this._canvasSize.width,
 			height: this._canvasSize.height,
 		};
@@ -70,7 +80,7 @@ class DevicePixelRatioBinding implements Binding {
 			throw new Error('No window is associated with the canvas');
 		}
 
-		return win.devicePixelRatio;
+		return win.devicePixelRatio > 1 || this._options.allowDownsampling ? win.devicePixelRatio : 1;
 	}
 
 	public subscribeCanvasConfigured(listener: CanvasConfiguredListener): void {
