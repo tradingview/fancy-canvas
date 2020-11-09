@@ -1,6 +1,6 @@
 import { Binding, BindingOptions, CanvasConfiguredListener, Size } from 'coordinate-space';
 
-export class MediaQueryDevicePixelRatioBinding implements Binding {
+export class MediaQueryBinding implements Binding {
     public readonly canvas: HTMLCanvasElement;
     private _canvasSize: Size;
     private _options: BindingOptions;

@@ -1,6 +1,6 @@
 import { Binding, BindingOptions } from './coordinate-space';
-import { MediaQueryDevicePixelRatioBinding } from './media-query-binding';
-import { PixelContentBoxDevicePixelRatioBinding } from './pixel-content-box-binding';
+import { MediaQueryBinding } from './media-query-binding';
+import { PixelContentBoxBinding } from './pixel-content-box-binding';
 
 const defaultBindingOptions = {
 	allowDownsampling: true,
@@ -17,12 +17,12 @@ function detectDevicePixelContentBox(): Promise<boolean> {
       .catch(() => false);
 } 
 
-function bindToMediaQueryDevicePixelRatioBinding(canvas: HTMLCanvasElement, options?: BindingOptions): Binding {
-    return new MediaQueryDevicePixelRatioBinding(canvas, options || defaultBindingOptions);
+function bindToMediaQueryBinding(canvas: HTMLCanvasElement, options?: BindingOptions): Binding {
+    return new MediaQueryBinding(canvas, options || defaultBindingOptions);
 }
 
-function bindToPixelContentBoxDevicePixelRatioBinding(canvas: HTMLCanvasElement, options?: BindingOptions): Binding {
-    return new PixelContentBoxDevicePixelRatioBinding(canvas, options || defaultBindingOptions);
+function bindToPixelContentBoxBinding(canvas: HTMLCanvasElement, options?: BindingOptions): Binding {
+    return new PixelContentBoxBinding(canvas, options || defaultBindingOptions);
 }
 
 export type CanvasBindingFactory = (canvas: HTMLCanvasElement, options?: BindingOptions) => Binding;
@@ -31,7 +31,7 @@ export function createCanvasBindingFactory(useObserverIfPossible?: boolean): Pro
     return detectDevicePixelContentBox()
         .then((value: boolean) => {
             return value && useObserverIfPossible ?
-            bindToPixelContentBoxDevicePixelRatioBinding :
-            bindToMediaQueryDevicePixelRatioBinding;
+            bindToPixelContentBoxBinding :
+            bindToMediaQueryBinding;
         });
 }
