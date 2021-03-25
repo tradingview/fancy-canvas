@@ -5,6 +5,7 @@
     "build:examples": "npm run build --prefix examples/checkers"
   },
   "devDependencies": {
+    "@types/resize-observer-browser": "^0.1.5",
     "copyfiles": "2.1.0",
     "rollup": "^0.66.6",
     "rollup-plugin-node-resolve": "^3.4.0",
