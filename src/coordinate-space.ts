@@ -25,4 +25,3 @@ export interface Binding {
 export interface BindingOptions {
 	allowDownsampling: boolean;
 }
-
