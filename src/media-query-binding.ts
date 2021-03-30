@@ -70,8 +70,15 @@ export class MediaQueryBinding implements Binding {
 		const ratio = this.pixelRatio;
 		this.canvas.style.width = `${this._canvasSize.width}px`;
 		this.canvas.style.height = `${this._canvasSize.height}px`;
-		this.canvas.width = this._canvasSize.width * ratio;
-		this.canvas.height = this._canvasSize.height * ratio;
+		const canvasRects = this.canvas.getClientRects();
+		this.canvas.width =
+			canvasRects.length > 0 ?
+				Math.round(canvasRects[0].left * ratio + this._canvasSize.width * ratio) - Math.round(canvasRects[0].left * ratio) : // "guessed" size
+				this._canvasSize.width * ratio; // fallback size
+		this.canvas.height =
+			canvasRects.length > 0 ?
+				Math.round(canvasRects[0].top * ratio + this._canvasSize.height * ratio) - Math.round(canvasRects[0].top * ratio) : // "guessed" size
+				this._canvasSize.height * ratio; // fallback size
 		this._emitCanvasConfigured();
 	}
 
