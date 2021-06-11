@@ -3,6 +3,7 @@
 	"compilerOptions": {
 		"declaration": true,
 		"outDir": "../dist/fancy-canvas",
-		"baseUrl": "./"
+		"baseUrl": "./",
+		"moduleResolution": "node"
 	}
 }
