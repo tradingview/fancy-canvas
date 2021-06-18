@@ -1,0 +1,14 @@
+version: 2.1
+
+executors:
+  node-latest-executor:
+    docker:
+      - image: circleci/node:14
+
+jobs:
+  build:
+    executor: node-latest-executor
+    steps:
+      - checkout
+      - run: npm install
+      - run: npm run build
