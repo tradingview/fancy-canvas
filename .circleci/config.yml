@@ -1,0 +1,46 @@
+version: 2.1
+
+executors:
+  node-latest-executor:
+    docker:
+      - image: circleci/node:14
+
+jobs:
+  build:
+    executor: node-latest-executor
+    steps:
+      - checkout
+      - run: npm install
+      - run: npm run build
+      - persist_to_workspace:
+          root: ./
+          paths:
+            - dist
+
+  pack:
+    executor: node-latest-executor
+    steps:
+      - attach_workspace:
+          at: ./
+      - run: mkdir packages
+      - run: cd dist/fancy-canvas && npm pack
+      - run: mv dist/fancy-canvas/fancy-canvas-$CIRCLE_TAG.tgz packages
+      - store_artifacts:
+          path: packages
+
+workflows:
+  version: 2
+  build-and-pack:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /.*/
+      - pack:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /.*/
+            branches:
+              ignore: /.*/
