@@ -3,7 +3,7 @@ import { NextObserver, Unsubscribable, BehaviorSubject } from './rx';
 
 class Observable implements BehaviorSubject<number>, Disposable {
 	private _window: Window;
-	private readonly _resolutionListener = (ev: MediaQueryListEvent) => this._onResolutionChanged();
+	private readonly _resolutionListener = () => this._onResolutionChanged();
 	private _resolutionMediaQueryList: MediaQueryList | null = null;
 	private _observers: NextObserver<number>[] = [];
 
@@ -14,7 +14,7 @@ class Observable implements BehaviorSubject<number>, Disposable {
 
 	public dispose(): void {
 		this._uninstallResolutionListener();
-		(this._window as any) = null;
+		(this._window as unknown as null) = null;
 	}
 
 	public get value(): number {

@@ -32,7 +32,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 	private _bitmapSizeChangedListeners: BitmapSizeChangedListener[] = [];
 	// devicePixelRatio approach
 	private _devicePixelRatioObservable: BehaviorSubject<number> & Disposable | null = null;
-	private _pendingAnimationFrameRequestId: number = 0;
+	private _pendingAnimationFrameRequestId = 0;
 	// ResizeObserver approach
 	private _canvasElementResizeObserver: ResizeObserver | null = null;
 
@@ -56,7 +56,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		}
 		this._devicePixelRatioObservable?.dispose();
 		this._bitmapSizeChangedListeners.length = 0;
-		(this.canvasElement as any) = null;
+		(this.canvasElement as unknown as null) = null;
 	}
 
 	public get canvasElementClientSize(): Size {
@@ -162,6 +162,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 	private _canvasElementWindow(): Window | null {
 		// According to DOM Level 2 Core specification, ownerDocument should never be null for HTMLCanvasElement
 		// see https://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#node-ownerDoc
+		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 		return this.canvasElement.ownerDocument!.defaultView;
 	}
 
