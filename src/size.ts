@@ -3,7 +3,7 @@ type Size = {
 	height: number;
 }
 
-export function equal(first: Size, second: Size) {
+export function equal(first: Size, second: Size): boolean {
 	return (first.width === second.width) &&
 		(first.height === second.height);
 }

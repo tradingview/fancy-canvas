@@ -75,7 +75,7 @@ window.onload = () => {
 
 type Point = { x: number, y: number };
 let originalPoint: Point | null = null;
-let offset: Point = { x: 0, y: 0 };
+const offset: Point = { x: 0, y: 0 };
 window.onmousedown = (ev: MouseEvent) => {
 	originalPoint = { x: ev.clientX, y: ev.clientY };
 }
