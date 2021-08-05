@@ -1,5 +1,5 @@
 import Disposable from './disposable';
-import Size from './size';
+import { Size, size } from './size';
 import { BehaviorSubject } from './rx';
 import { createObservable as createDevicePixelRatioObservable } from './device-pixel-ratio'
 
@@ -38,10 +38,10 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 
 	public constructor(canvasElement: HTMLCanvasElement, options?: DevicePixelContentBoxBindingTargetOptions) {
 		this.canvasElement = canvasElement;
-		this._canvasElementClientSize = {
+		this._canvasElementClientSize = size({
 			width: this.canvasElement.clientWidth,
 			height: this.canvasElement.clientHeight,
-		};
+		});
 		this._allowDownsampling = options?.allowDownsampling ?? true;
 		this._allowResizeObserver = options?.allowResizeObserver ?? true;
 
@@ -60,14 +60,14 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 	}
 
 	public get canvasElementClientSize(): Size {
-		return { ...this._canvasElementClientSize };
+		return this._canvasElementClientSize;
 	}
 
 	public get bitmapSize(): Size {
-		return {
+		return size({
 			width: this.canvasElement.width,
 			height: this.canvasElement.height,
-		};
+		});
 	}
 
 	/**
@@ -75,7 +75,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 	 * @param clientSize New client size for bound HTMLCanvasElement
 	 */
 	public resizeCanvasElement(clientSize: Size): void {
-		this._canvasElementClientSize = { ...clientSize };
+		this._canvasElementClientSize = clientSize;
 		this.canvasElement.style.width = `${this._canvasElementClientSize.width}px`;
 		this.canvasElement.style.height = `${this._canvasElementClientSize.height}px`;
 		
@@ -93,11 +93,11 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		this._bitmapSizeChangedListeners = this._bitmapSizeChangedListeners.filter(l => l != listener);
 	}
 
-	private _resizeBitmap(size: Size): void {
+	private _resizeBitmap(newSize: Size): void {
 		const oldSize = this.bitmapSize;
-		this.canvasElement.width = size.width;
-		this.canvasElement.height = size.height;
-		this._emitBitmapSizeChanged(oldSize, size);
+		this.canvasElement.width = newSize.width;
+		this.canvasElement.height = newSize.height;
+		this._emitBitmapSizeChanged(oldSize, newSize);
 	}
 
 	private _emitBitmapSizeChanged(oldSize: Size, newSize: Size): void {
@@ -145,7 +145,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 				return;
 			}
 
-			const newSize = {
+			const newSize = size({
 				width:
 					// "guessed" size
 					Math.round(canvasRects[0].left * ratio + this.canvasElement.clientWidth * ratio) -
@@ -154,7 +154,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 					// "guessed" size
 					Math.round(canvasRects[0].top * ratio + this.canvasElement.clientHeight * ratio) -
 					Math.round(canvasRects[0].top * ratio),
-			};
+			});
 			this._resizeBitmap(newSize);
 		});
 	}
@@ -174,10 +174,10 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 				return;
 			}
 			const entrySize = entry.devicePixelContentBoxSize[0];
-			const newSize = {
+			const newSize = size({
 				width: this._allowDownsampling ? entrySize.inlineSize : Math.max(entrySize.inlineSize, this.canvasElement.clientWidth),
 				height: this._allowDownsampling ? entrySize.blockSize : Math.max(entrySize.blockSize, this.canvasElement.clientHeight),
-			};
+			});
 			this._resizeBitmap(newSize);
 		});
 		this._canvasElementResizeObserver.observe(this.canvasElement, { box: 'device-pixel-content-box' });
