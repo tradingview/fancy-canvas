@@ -4,6 +4,7 @@ import { BehaviorSubject } from './rx';
 import { createObservable as createDevicePixelRatioObservable } from './device-pixel-ratio'
 
 export type BitmapSizeChangedListener = (this: Binding, oldSize: Size, newSize: Size) => void;
+export type BitmapSizeTransformer = (bitmapSize: Size, canvasElementClientSize: Size) => Size;
 
 export interface Binding extends Disposable {
 	readonly canvasElement: HTMLCanvasElement;
@@ -19,13 +20,12 @@ export interface Binding extends Disposable {
 }
 
 export interface DevicePixelContentBoxBindingTargetOptions {
-	allowDownsampling?: boolean;
 	allowResizeObserver?: boolean;
 }
 
 class DevicePixelContentBoxBinding implements Binding, Disposable {
 	public readonly canvasElement: HTMLCanvasElement;
-	private readonly _allowDownsampling: boolean;
+	private readonly _transformBitmapSize: BitmapSizeTransformer;
 	private readonly _allowResizeObserver: boolean;
 
 	private _canvasElementClientSize: Size;
@@ -36,13 +36,13 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 	// ResizeObserver approach
 	private _canvasElementResizeObserver: ResizeObserver | null = null;
 
-	public constructor(canvasElement: HTMLCanvasElement, options?: DevicePixelContentBoxBindingTargetOptions) {
+	public constructor(canvasElement: HTMLCanvasElement, transformBitmapSize?: BitmapSizeTransformer, options?: DevicePixelContentBoxBindingTargetOptions) {
 		this.canvasElement = canvasElement;
 		this._canvasElementClientSize = size({
 			width: this.canvasElement.clientWidth,
 			height: this.canvasElement.clientHeight,
 		});
-		this._allowDownsampling = options?.allowDownsampling ?? true;
+		this._transformBitmapSize = transformBitmapSize ?? (size => size);
 		this._allowResizeObserver = options?.allowResizeObserver ?? true;
 
 		this._chooseAndInitObserver();
@@ -136,9 +136,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 			if (this._devicePixelRatioObservable === null) {
 				return;
 			}
-
-			const devicePixelRatio = this._devicePixelRatioObservable.value;
-			const ratio = devicePixelRatio > 1 || this._allowDownsampling ? devicePixelRatio : 1;
+			const ratio = this._devicePixelRatioObservable.value;
 
 			const canvasRects = this.canvasElement.getClientRects();
 			if (canvasRects.length === 0) {
@@ -148,14 +146,14 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 			const newSize = size({
 				width:
 					// "guessed" size
-					Math.round(canvasRects[0].left * ratio + this.canvasElement.clientWidth * ratio) -
+					Math.round(canvasRects[0].left * ratio + this._canvasElementClientSize.width * ratio) -
 					Math.round(canvasRects[0].left * ratio),
 				height:
 					// "guessed" size
-					Math.round(canvasRects[0].top * ratio + this.canvasElement.clientHeight * ratio) -
+					Math.round(canvasRects[0].top * ratio + this._canvasElementClientSize.height * ratio) -
 					Math.round(canvasRects[0].top * ratio),
 			});
-			this._resizeBitmap(newSize);
+			this._resizeBitmap(this._transformBitmapSize(newSize, this._canvasElementClientSize));
 		});
 	}
 
@@ -175,10 +173,10 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 			}
 			const entrySize = entry.devicePixelContentBoxSize[0];
 			const newSize = size({
-				width: this._allowDownsampling ? entrySize.inlineSize : Math.max(entrySize.inlineSize, this.canvasElement.clientWidth),
-				height: this._allowDownsampling ? entrySize.blockSize : Math.max(entrySize.blockSize, this.canvasElement.clientHeight),
+				width: entrySize.inlineSize,
+				height: entrySize.blockSize,
 			});
-			this._resizeBitmap(newSize);
+			this._resizeBitmap(this._transformBitmapSize(newSize, this._canvasElementClientSize));
 		});
 		this._canvasElementResizeObserver.observe(this.canvasElement, { box: 'device-pixel-content-box' });
 	}
@@ -186,12 +184,13 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 
 export type BindingTarget = {
 	type: 'device-pixel-content-box';
+	transform?: BitmapSizeTransformer;
 	options?: DevicePixelContentBoxBindingTargetOptions;
 };
 
 export function bindTo(canvasElement: HTMLCanvasElement, target: BindingTarget): Binding {
 	if (target.type === 'device-pixel-content-box') {
-		return new DevicePixelContentBoxBinding(canvasElement, target.options);
+		return new DevicePixelContentBoxBinding(canvasElement, target.transform, target.options);
 	} else {
 		throw new Error('Unsupported binding target');
 	}
