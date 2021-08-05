@@ -93,6 +93,10 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		this._bitmapSizeChangedListeners = this._bitmapSizeChangedListeners.filter(l => l != listener);
 	}
 
+	private _applyNewBitmapSize(newSize: Size): void {
+		this._resizeBitmap(this._transformBitmapSize(newSize, this._canvasElementClientSize));
+	}
+
 	private _resizeBitmap(newSize: Size): void {
 		const oldSize = this.bitmapSize;
 		this.canvasElement.width = newSize.width;
@@ -153,7 +157,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 					Math.round(canvasRects[0].top * ratio + this._canvasElementClientSize.height * ratio) -
 					Math.round(canvasRects[0].top * ratio),
 			});
-			this._resizeBitmap(this._transformBitmapSize(newSize, this._canvasElementClientSize));
+			this._applyNewBitmapSize(newSize);
 		});
 	}
 
@@ -176,7 +180,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 				width: entrySize.inlineSize,
 				height: entrySize.blockSize,
 			});
-			this._resizeBitmap(this._transformBitmapSize(newSize, this._canvasElementClientSize));
+			this._applyNewBitmapSize(newSize);
 		});
 		this._canvasElementResizeObserver.observe(this.canvasElement, { box: 'device-pixel-content-box' });
 	}
