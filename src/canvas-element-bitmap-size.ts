@@ -1,5 +1,5 @@
 import Disposable from './disposable';
-import { Size, size } from './size';
+import { equalSizes, Size, size } from './size';
 import { BehaviorSubject } from './rx';
 import { createObservable as createDevicePixelRatioObservable } from './device-pixel-ratio'
 
@@ -99,6 +99,10 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 
 	private _resizeBitmap(newSize: Size): void {
 		const oldSize = this.bitmapSize;
+		if (equalSizes(oldSize, newSize)) {
+			return;
+		}
+
 		this.canvasElement.width = newSize.width;
 		this.canvasElement.height = newSize.height;
 		this._emitBitmapSizeChanged(oldSize, newSize);
