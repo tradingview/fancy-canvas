@@ -1,8 +1,13 @@
-import { Size, CanvasElementBitmapSizeBinding, bindCanvasElementBitmapSizeTo } from 'fancy-canvas';
+import {
+	bindCanvasElementBitmapSizeTo,
+	CanvasElementBitmapSizeBinding,
+	Size,
+	size,
+} from 'fancy-canvas';
 
 class RenderParams {
-	public readonly canvasElementClientSize: Readonly<Size>;
-	public readonly bitmapSize: Readonly<Size>;
+	public readonly canvasElementClientSize: Size;
+	public readonly bitmapSize: Size;
 
 	public constructor(canvasElementClientSize: Size, bitmapSize: Size) {
 		this.canvasElementClientSize = canvasElementClientSize;
@@ -102,7 +107,7 @@ function renderFrame() {
 			return;
 		}
 
-		const cnv0Size = { width: cnv0.width, height: cnv0.height };
+		const cnv0Size = size({ width: cnv0.width, height: cnv0.height });
 		drawScene(ctx, new RenderParams(cnv0Size, cnv0Size));
 	}
 
