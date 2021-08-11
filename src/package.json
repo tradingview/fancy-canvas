@@ -3,9 +3,7 @@
   "version": "0.0.0",
   "description": "Functionality on top of HTML canvas element, including support for HiDPI and pixel-perfect rendering",
   "scripts": {
-    "build": "npm run build:commonjs && npm run build:esmodule && node ../tools/build-package-json package.json ../dist/fancy-canvas/package.json",
-    "build:commonjs": "tsc --project tsconfig.json --module commonjs && node ../tools/replace-extension ../dist/fancy-canvas .js .cjs",
-    "build:esmodule": "tsc --project tsconfig.json --module es2015 && node ../tools/replace-extension ../dist/fancy-canvas .js .mjs"
+    "build": "tsc --project tsconfig.json && node ../tools/build-package-json package.json ../dist/fancy-canvas/package.json"
   },
   "keywords": [
     "html",
@@ -17,10 +15,9 @@
   "author": "smakarov@tradingview.com",
   "license": "MIT",
   "private": true,
-  "main": "./index.cjs",
-  "module": "./index.mjs",
+  "type": "module",
+  "module": "./index.js",
   "exports": {
-    "import": "./index.mjs",
-    "require": "./index.cjs"
+    "import": "./index.js"
   }
 }

@@ -1,5 +1,4 @@
 var fs = require('fs');
-var path = require('path');
 
 var args = process.argv.slice(2);
 var inputPath = args[0];
@@ -29,14 +28,15 @@ var output = {
 	cpu: input.cpu,
 	os: input.os,
 
-	// entry points
+	// module format and entry points
 	bin: input.bin,
 	exports: input.exports,
 	main: input.main,
 	man: input.man,
 	module: input.module,
+	type: input.type,
 
 	// contents
-	files: ["**/*.cjs", "**/*.mjs", "**/*.d.ts"],
+	files: ["**/*.js", "**/*.d.ts"],
 };
 fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
