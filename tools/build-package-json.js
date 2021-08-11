@@ -31,10 +31,12 @@ var output = {
 
 	// entry points
 	bin: input.bin,
+	exports: input.exports,
 	main: input.main,
 	man: input.man,
+	module: input.module,
 
 	// contents
-	files: ["**/*.js", "**/*.d.ts"],
+	files: ["**/*.cjs", "**/*.mjs", "**/*.d.ts"],
 };
 fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
