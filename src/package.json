@@ -14,5 +14,10 @@
   ],
   "author": "smakarov@tradingview.com",
   "license": "MIT",
-  "private": true
+  "private": true,
+  "type": "module",
+  "module": "./index.js",
+  "exports": {
+    "import": "./index.js"
+  }
 }
