@@ -24,10 +24,10 @@ export interface DevicePixelContentBoxBindingTargetOptions {
 }
 
 class DevicePixelContentBoxBinding implements Binding, Disposable {
-	public readonly canvasElement: HTMLCanvasElement;
 	private readonly _transformBitmapSize: BitmapSizeTransformer;
 	private readonly _allowResizeObserver: boolean;
 
+	private _canvasElement: HTMLCanvasElement | null = null;
 	private _canvasElementClientSize: Size;
 	private _bitmapSizeChangedListeners: BitmapSizeChangedListener[] = [];
 	// devicePixelRatio approach
@@ -37,10 +37,10 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 	private _canvasElementResizeObserver: ResizeObserver | null = null;
 
 	public constructor(canvasElement: HTMLCanvasElement, transformBitmapSize?: BitmapSizeTransformer, options?: DevicePixelContentBoxBindingTargetOptions) {
-		this.canvasElement = canvasElement;
+		this._canvasElement = canvasElement;
 		this._canvasElementClientSize = size({
-			width: this.canvasElement.clientWidth,
-			height: this.canvasElement.clientHeight,
+			width: this._canvasElement.clientWidth,
+			height: this._canvasElement.clientHeight,
 		});
 		this._transformBitmapSize = transformBitmapSize ?? (size => size);
 		this._allowResizeObserver = options?.allowResizeObserver ?? true;
@@ -50,13 +50,23 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 	}
 
 	public dispose(): void {
+		if (this._canvasElement === null) {
+			throw new Error("Object is disposed");
+		}
 		this._canvasElementResizeObserver?.disconnect();
 		if (this._pendingAnimationFrameRequestId > 0) {
-			this._canvasElementWindow()?.cancelAnimationFrame(this._pendingAnimationFrameRequestId);
+			canvasElementWindow(this._canvasElement)?.cancelAnimationFrame(this._pendingAnimationFrameRequestId);
 		}
 		this._devicePixelRatioObservable?.dispose();
 		this._bitmapSizeChangedListeners.length = 0;
-		(this.canvasElement as unknown as null) = null;
+		this._canvasElement = null;
+	}
+
+	public get canvasElement(): HTMLCanvasElement {
+		if (this._canvasElement === null) {
+			throw new Error("Object is disposed");
+		}
+		return this._canvasElement;
 	}
 
 	public get canvasElementClientSize(): Size {
@@ -122,7 +132,12 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 
 	// devicePixelRatio approach
 	private _initDevicePixelRatioObservable(): void {
-		const win = this._canvasElementWindow();
+		if (this._canvasElement === null) {
+			// it looks like we are already dead
+			return;
+		}
+
+		const win = canvasElementWindow(this._canvasElement);
 		if (win == null) {
 			throw new Error('No window is associated with the canvas');
 		}
@@ -133,7 +148,12 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 	}
 
 	private _invalidateBitmapSize(): void {
-		const win = this._canvasElementWindow();
+		if (this._canvasElement === null) {
+			// it looks like we are already dead
+			return;
+		}
+
+		const win = canvasElementWindow(this._canvasElement);
 		if (win == null) {
 			return;
 		}
@@ -146,7 +166,12 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 			}
 			const ratio = this._devicePixelRatioObservable.value;
 
-			const canvasRects = this.canvasElement.getClientRects();
+			if (this._canvasElement === null) {
+				// it looks like we are already dead
+				return;
+			}
+
+			const canvasRects = this._canvasElement.getClientRects();
 			if (canvasRects.length === 0) {
 				return;
 			}
@@ -165,17 +190,15 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		});
 	}
 
-	private _canvasElementWindow(): Window | null {
-		// According to DOM Level 2 Core specification, ownerDocument should never be null for HTMLCanvasElement
-		// see https://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#node-ownerDoc
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-		return this.canvasElement.ownerDocument!.defaultView;
-	}
-
 	// ResizeObserver approach
 	private _initResizeObserver(): void {
+		if (this._canvasElement === null) {
+			// it looks like we are already dead
+			return;
+		}
+
 		this._canvasElementResizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
-			const entry = entries.find((entry: ResizeObserverEntry) => entry.target === this.canvasElement);
+			const entry = entries.find((entry: ResizeObserverEntry) => entry.target === this._canvasElement);
 			if (!entry || !entry.devicePixelContentBoxSize) {
 				return;
 			}
@@ -186,7 +209,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 			});
 			this._applyNewBitmapSize(newSize);
 		});
-		this._canvasElementResizeObserver.observe(this.canvasElement, { box: 'device-pixel-content-box' });
+		this._canvasElementResizeObserver.observe(this._canvasElement, { box: 'device-pixel-content-box' });
 	}
 }
 
@@ -202,6 +225,13 @@ export function bindTo(canvasElement: HTMLCanvasElement, target: BindingTarget):
 	} else {
 		throw new Error('Unsupported binding target');
 	}
+}
+
+function canvasElementWindow(canvasElement: HTMLCanvasElement): Window | null {
+	// According to DOM Level 2 Core specification, ownerDocument should never be null for HTMLCanvasElement
+	// see https://www.w3.org/TR/2000/REC-DOM-Level-2-Core-20001113/core.html#node-ownerDoc
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	return canvasElement.ownerDocument!.defaultView;
 }
 
 function isDevicePixelContentBoxSupported(): Promise<boolean> {
