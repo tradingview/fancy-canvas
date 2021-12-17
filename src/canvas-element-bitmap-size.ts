@@ -122,12 +122,18 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		this._bitmapSizeChangedListeners.forEach(listener => listener.call(this, oldSize, newSize));
 	}
 
-	private async _chooseAndInitObserver(): Promise<void> {
-		if (this._allowResizeObserver && await isDevicePixelContentBoxSupported()) {
-			this._initResizeObserver();
-		} else {
+	private _chooseAndInitObserver(): void {
+		if (!this._allowResizeObserver) {
 			this._initDevicePixelRatioObservable();
+			return;
 		}
+
+		isDevicePixelContentBoxSupported()
+			.then(isSupported =>
+				isSupported?
+					this._initResizeObserver() :
+					this._initDevicePixelRatioObservable()
+			);
 	}
 
 	// devicePixelRatio approach
