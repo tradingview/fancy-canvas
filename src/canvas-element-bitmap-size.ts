@@ -54,10 +54,12 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 			throw new Error("Object is disposed");
 		}
 		this._canvasElementResizeObserver?.disconnect();
+		this._canvasElementResizeObserver = null;
 		if (this._pendingAnimationFrameRequestId > 0) {
 			canvasElementWindow(this._canvasElement)?.cancelAnimationFrame(this._pendingAnimationFrameRequestId);
 		}
 		this._devicePixelRatioObservable?.dispose();
+		this._devicePixelRatioObservable = null;
 		this._bitmapSizeChangedListeners.length = 0;
 		this._canvasElement = null;
 	}
