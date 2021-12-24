@@ -1,4 +1,4 @@
-import resolve from 'rollup-plugin-node-resolve';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 import typescript from '@rollup/plugin-typescript';
 
 export default {
@@ -11,8 +11,8 @@ export default {
 	],
 
 	plugins: [
-		resolve({
-			customResolveOptions: { moduleDirectory: "../../dist" }
+		nodeResolve({
+			moduleDirectories: ["../../dist"],
 		}),
 		typescript(),
 	],
