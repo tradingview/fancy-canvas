@@ -6,6 +6,7 @@
     "lint": "eslint --ext .ts examples/ src/"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^8.3.0",
     "@types/resize-observer-browser": "^0.1.5",
     "@typescript-eslint/eslint-plugin": "^4.28.2",
     "@typescript-eslint/parser": "^4.28.2",
@@ -13,7 +14,6 @@
     "eslint": "^7.30.0",
     "rollup": "^2.62.0",
     "rollup-plugin-node-resolve": "^3.4.0",
-    "rollup-plugin-typescript2": "^0.25.2",
     "typescript": "3.7.2"
   },
   "private": true

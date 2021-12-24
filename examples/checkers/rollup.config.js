@@ -1,5 +1,5 @@
 import resolve from 'rollup-plugin-node-resolve';
-import typescript from 'rollup-plugin-typescript2'
+import typescript from '@rollup/plugin-typescript';
 
 export default {
 	input: 'index.ts',
@@ -14,8 +14,6 @@ export default {
 		resolve({
 			customResolveOptions: { moduleDirectory: "../../dist" }
 		}),
-		typescript({
-			typescript: require('typescript'),
-		}),
+		typescript(),
 	],
 }
