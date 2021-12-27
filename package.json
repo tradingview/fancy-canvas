@@ -9,10 +9,10 @@
     "@rollup/plugin-node-resolve": "^13.1.1",
     "@rollup/plugin-typescript": "^8.3.0",
     "@types/resize-observer-browser": "^0.1.5",
-    "@typescript-eslint/eslint-plugin": "^4.28.2",
-    "@typescript-eslint/parser": "^4.28.2",
+    "@typescript-eslint/eslint-plugin": "^5.8.0",
+    "@typescript-eslint/parser": "^5.8.0",
     "copyfiles": "2.1.0",
-    "eslint": "^7.30.0",
+    "eslint": "^8.5.0",
     "rollup": "^2.62.0",
     "typescript": "3.7.2"
   },
