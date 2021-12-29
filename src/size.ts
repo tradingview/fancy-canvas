@@ -15,7 +15,7 @@ export function size({ width, height }: { width: number, height: number }): Size
 	return { width, height } as Size;
 }
 
-export function equalSizes(first: Size, second: Size): boolean {
+export function equalSizes(first: { width: number, height: number }, second: { width: number, height: number }): boolean {
 	return (first.width === second.width) &&
 		(first.height === second.height);
 }

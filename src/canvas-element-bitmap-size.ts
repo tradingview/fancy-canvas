@@ -4,7 +4,7 @@ import { BehaviorSubject } from './rx';
 import { createObservable as createDevicePixelRatioObservable } from './device-pixel-ratio'
 
 export type BitmapSizeChangedListener = (this: Binding, oldSize: Size, newSize: Size) => void;
-export type BitmapSizeTransformer = (bitmapSize: Size, canvasElementClientSize: Size) => Size;
+export type BitmapSizeTransformer = (bitmapSize: Size, canvasElementClientSize: Size) => { width: number, height: number };
 
 export interface Binding extends Disposable {
 	readonly canvasElement: HTMLCanvasElement;
@@ -12,7 +12,7 @@ export interface Binding extends Disposable {
 	 * Canvas element client size in CSS pixels
 	 */
 	readonly canvasElementClientSize: Size;
-	resizeCanvasElement(clientSize: Size): void;
+	resizeCanvasElement(clientSize: { width: number, height: number }): void;
 	
 	readonly bitmapSize: Size;
 	subscribeBitmapSizeChanged(listener: BitmapSizeChangedListener): void;
@@ -86,8 +86,8 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 	 * Use this function to change canvas element client size until binding is disposed
 	 * @param clientSize New client size for bound HTMLCanvasElement
 	 */
-	public resizeCanvasElement(clientSize: Size): void {
-		this._canvasElementClientSize = clientSize;
+	public resizeCanvasElement(clientSize: { width: number, height: number }): void {
+		this._canvasElementClientSize = size(clientSize);
 		this.canvasElement.style.width = `${this._canvasElementClientSize.width}px`;
 		this.canvasElement.style.height = `${this._canvasElementClientSize.height}px`;
 		
@@ -106,7 +106,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 	}
 
 	private _applyNewBitmapSize(newSize: Size): void {
-		this._resizeBitmap(this._transformBitmapSize(newSize, this._canvasElementClientSize));
+		this._resizeBitmap(size(this._transformBitmapSize(newSize, this._canvasElementClientSize)));
 	}
 
 	private _resizeBitmap(newSize: Size): void {
