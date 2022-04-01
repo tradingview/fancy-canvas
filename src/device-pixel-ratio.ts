@@ -1,5 +1,5 @@
-import Disposable from './disposable'
-import { NextObserver, Unsubscribable, BehaviorSubject } from './rx';
+import Disposable from './disposable.js'
+import { NextObserver, Unsubscribable, BehaviorSubject } from './rx.js';
 
 class Observable implements BehaviorSubject<number>, Disposable {
 	private _window: Window;
