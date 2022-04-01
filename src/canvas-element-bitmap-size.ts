@@ -1,7 +1,7 @@
-import Disposable from './disposable';
-import { equalSizes, Size, size } from './size';
-import { BehaviorSubject } from './rx';
-import { createObservable as createDevicePixelRatioObservable } from './device-pixel-ratio'
+import Disposable from './disposable.js';
+import { equalSizes, Size, size } from './size.js';
+import { BehaviorSubject } from './rx.js';
+import { createObservable as createDevicePixelRatioObservable } from './device-pixel-ratio.js'
 
 export type BitmapSizeChangedListener = (this: Binding, oldSize: Size, newSize: Size) => void;
 export type BitmapSizeTransformer = (bitmapSize: Size, canvasElementClientSize: Size) => { width: number, height: number };
