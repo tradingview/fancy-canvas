@@ -5,6 +5,7 @@ import { createObservable as createDevicePixelRatioObservable } from './device-p
 
 export type BitmapSizeChangedListener = (this: Binding, oldSize: Size, newSize: Size) => void;
 export type BitmapSizeTransformer = (bitmapSize: Size, canvasElementClientSize: Size) => { width: number, height: number };
+export type SuggestedBitmapSizeChangedListener = (this: Binding, oldSize: Size | null, newSize: Size | null) => void;
 
 export interface Binding extends Disposable {
 	readonly canvasElement: HTMLCanvasElement;
@@ -17,6 +18,11 @@ export interface Binding extends Disposable {
 	readonly bitmapSize: Size;
 	subscribeBitmapSizeChanged(listener: BitmapSizeChangedListener): void;
 	unsubscribeBitmapSizeChanged(listener: BitmapSizeChangedListener): void;
+
+	readonly suggestedBitmapSize: Size | null;
+	subscribeSuggestedBitmapSizeChanged(listener: SuggestedBitmapSizeChangedListener): void;
+	unsubscribeSuggestedBitmapSizeChanged(listener: SuggestedBitmapSizeChangedListener): void;
+	applySuggestedBitmapSize(): void;
 }
 
 export interface DevicePixelContentBoxBindingTargetOptions {
@@ -30,9 +36,10 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 	private _canvasElement: HTMLCanvasElement | null = null;
 	private _canvasElementClientSize: Size;
 	private _bitmapSizeChangedListeners: BitmapSizeChangedListener[] = [];
+	private _suggestedBitmapSize: Size | null = null;
+	private _suggestedBitmapSizeChangedListeners: SuggestedBitmapSizeChangedListener[] = [];
 	// devicePixelRatio approach
 	private _devicePixelRatioObservable: BehaviorSubject<number> & Disposable | null = null;
-	private _pendingAnimationFrameRequestId = 0;
 	// ResizeObserver approach
 	private _canvasElementResizeObserver: ResizeObserver | null = null;
 
@@ -55,11 +62,9 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		}
 		this._canvasElementResizeObserver?.disconnect();
 		this._canvasElementResizeObserver = null;
-		if (this._pendingAnimationFrameRequestId > 0) {
-			canvasElementWindow(this._canvasElement)?.cancelAnimationFrame(this._pendingAnimationFrameRequestId);
-		}
 		this._devicePixelRatioObservable?.dispose();
 		this._devicePixelRatioObservable = null;
+		this._suggestedBitmapSizeChangedListeners.length = 0;
 		this._bitmapSizeChangedListeners.length = 0;
 		this._canvasElement = null;
 	}
@@ -105,8 +110,28 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		this._bitmapSizeChangedListeners = this._bitmapSizeChangedListeners.filter(l => l != listener);
 	}
 
-	private _applyNewBitmapSize(newSize: Size): void {
-		this._resizeBitmap(size(this._transformBitmapSize(newSize, this._canvasElementClientSize)));
+	public get suggestedBitmapSize(): Size | null {
+		return this._suggestedBitmapSize;
+	}
+
+	public subscribeSuggestedBitmapSizeChanged(listener: SuggestedBitmapSizeChangedListener): void {
+		this._suggestedBitmapSizeChangedListeners.push(listener);
+	}
+
+	public unsubscribeSuggestedBitmapSizeChanged(listener: SuggestedBitmapSizeChangedListener): void {
+		this._suggestedBitmapSizeChangedListeners = this._suggestedBitmapSizeChangedListeners.filter(l => l != listener);
+	}
+
+	public applySuggestedBitmapSize(): void {
+		if (this._suggestedBitmapSize === null) {
+			// nothing to apply
+			return;
+		}
+
+		const oldSuggestedSize = this._suggestedBitmapSize;
+		this._suggestedBitmapSize = null;
+		this._resizeBitmap(oldSuggestedSize);
+		this._emitSuggestedBitmapSizeChanged(oldSuggestedSize, this._suggestedBitmapSize);
 	}
 
 	private _resizeBitmap(newSize: Size): void {
@@ -122,6 +147,28 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 
 	private _emitBitmapSizeChanged(oldSize: Size, newSize: Size): void {
 		this._bitmapSizeChangedListeners.forEach(listener => listener.call(this, oldSize, newSize));
+	}
+
+	private _suggestNewBitmapSize(newSize: Size): void {
+		const oldSuggestedSize = this._suggestedBitmapSize;
+		const finalNewSize = size(this._transformBitmapSize(newSize, this._canvasElementClientSize));
+		const newSuggestedSize = equalSizes(this.bitmapSize, finalNewSize) ? null : finalNewSize;
+
+		if (oldSuggestedSize === null && newSuggestedSize === null) {
+			return;
+		}
+
+		if (oldSuggestedSize !== null && newSuggestedSize !== null
+			&& equalSizes(oldSuggestedSize, newSuggestedSize)) {
+			return;
+		}
+
+		this._suggestedBitmapSize = newSuggestedSize;
+		this._emitSuggestedBitmapSizeChanged(oldSuggestedSize, newSuggestedSize);
+	}
+
+	private _emitSuggestedBitmapSizeChanged(oldSize: Size | null, newSize: Size | null): void {
+		this._suggestedBitmapSizeChangedListeners.forEach(listener => listener.call(this, oldSize, newSize));
 	}
 
 	private _chooseAndInitObserver(): void {
@@ -166,36 +213,28 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 			return;
 		}
 
-		this._pendingAnimationFrameRequestId = win.requestAnimationFrame(() => {
-			this._pendingAnimationFrameRequestId = 0;
-			// we should use this logic only with devicePixelRatio approach
-			if (this._devicePixelRatioObservable === null) {
-				return;
-			}
-			const ratio = this._devicePixelRatioObservable.value;
+		// we should use this logic only with devicePixelRatio approach
+		if (this._devicePixelRatioObservable === null) {
+			return;
+		}
+		const ratio = this._devicePixelRatioObservable.value;
 
-			if (this._canvasElement === null) {
-				// it looks like we are already dead
-				return;
-			}
+		const canvasRects = this._canvasElement.getClientRects();
+		if (canvasRects.length === 0) {
+			return;
+		}
 
-			const canvasRects = this._canvasElement.getClientRects();
-			if (canvasRects.length === 0) {
-				return;
-			}
-
-			const newSize = size({
-				width:
-					// "guessed" size
-					Math.round(canvasRects[0].left * ratio + this._canvasElementClientSize.width * ratio) -
-					Math.round(canvasRects[0].left * ratio),
-				height:
-					// "guessed" size
-					Math.round(canvasRects[0].top * ratio + this._canvasElementClientSize.height * ratio) -
-					Math.round(canvasRects[0].top * ratio),
-			});
-			this._applyNewBitmapSize(newSize);
+		const newSize = size({
+			width:
+				// "guessed" size
+				Math.round(canvasRects[0].left * ratio + this._canvasElementClientSize.width * ratio) -
+				Math.round(canvasRects[0].left * ratio),
+			height:
+				// "guessed" size
+				Math.round(canvasRects[0].top * ratio + this._canvasElementClientSize.height * ratio) -
+				Math.round(canvasRects[0].top * ratio),
 		});
+		this._suggestNewBitmapSize(newSize);
 	}
 
 	// ResizeObserver approach
@@ -215,7 +254,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 				width: entrySize.inlineSize,
 				height: entrySize.blockSize,
 			});
-			this._applyNewBitmapSize(newSize);
+			this._suggestNewBitmapSize(newSize);
 		});
 		this._canvasElementResizeObserver.observe(this._canvasElement, { box: 'device-pixel-content-box' });
 	}
