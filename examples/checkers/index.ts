@@ -50,7 +50,7 @@ window.onload = () => {
 			// Don't forget to unsubscribe if you are going to destroy binding or canvas
 			// not sure why do we need this if. Looks like compiler bug
 			if (binding1 !== null) {
-				binding1.subscribeBitmapSizeChanged(() => {
+				binding1.subscribeSuggestedBitmapSizeChanged(() => {
 					window.requestAnimationFrame(renderFrame);
 					updatePixelRatioText(binding1);
 				});
@@ -68,7 +68,7 @@ window.onload = () => {
 			// Don't forget to unsubscribe if you are going to destroy binding or canvas
 			// not sure why do we need this if. Looks like compiler bug
 			if (binding2 !== null) {
-				binding2.subscribeBitmapSizeChanged(() => {
+				binding2.subscribeSuggestedBitmapSizeChanged(() => {
 					window.requestAnimationFrame(renderFrame);
 				});
 			}
@@ -112,6 +112,10 @@ function renderFrame() {
 	}
 
 	{
+		if (binding1.suggestedBitmapSize !== null) {
+			binding1.applySuggestedBitmapSize();
+		}
+
 		const ctx = cnv1.getContext("2d");
 		if (ctx === null) {
 			return;
@@ -121,6 +125,10 @@ function renderFrame() {
 	}
 
 	{
+		if (binding2.suggestedBitmapSize !== null) {
+			binding2.applySuggestedBitmapSize();
+		}
+
 		const ctx = cnv2.getContext("2d");
 		if (ctx === null) {
 			return;
