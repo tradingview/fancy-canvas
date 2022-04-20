@@ -96,10 +96,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		this.canvasElement.style.width = `${this._canvasElementClientSize.width}px`;
 		this.canvasElement.style.height = `${this._canvasElementClientSize.height}px`;
 		
-		// we should use this logic only with devicePixelRatio approach
-		if (this._devicePixelRatioObservable !== null) {
-			this._invalidateBitmapSize();
-		}
+		this._invalidateBitmapSize();
 	}
 
 	public subscribeBitmapSizeChanged(listener: BitmapSizeChangedListener): void {
@@ -213,11 +210,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 			return;
 		}
 
-		// we should use this logic only with devicePixelRatio approach
-		if (this._devicePixelRatioObservable === null) {
-			return;
-		}
-		const ratio = this._devicePixelRatioObservable.value;
+		const ratio = this._devicePixelRatioObservable?.value ?? win.devicePixelRatio;
 
 		const canvasRects = this._canvasElement.getClientRects();
 		if (canvasRects.length === 0) {
