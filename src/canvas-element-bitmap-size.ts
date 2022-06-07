@@ -217,16 +217,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 			return;
 		}
 
-		const newSize = size({
-			width:
-				// "guessed" size
-				Math.round(canvasRects[0].left * ratio + this._canvasElementClientSize.width * ratio) -
-				Math.round(canvasRects[0].left * ratio),
-			height:
-				// "guessed" size
-				Math.round(canvasRects[0].top * ratio + this._canvasElementClientSize.height * ratio) -
-				Math.round(canvasRects[0].top * ratio),
-		});
+		const newSize = predictedBitmapSize(canvasRects[0], ratio);
 		this._suggestNewBitmapSize(newSize);
 	}
 
@@ -283,4 +274,15 @@ function isDevicePixelContentBoxSupported(): Promise<boolean> {
 		ro.observe(document.body, { box: 'device-pixel-content-box' });
 	})
 	.catch(() => false);
+}
+
+function predictedBitmapSize(canvasRect: DOMRect, ratio: number): Size {
+	return size({
+		width:
+			Math.round(canvasRect.left * ratio + canvasRect.width * ratio) -
+			Math.round(canvasRect.left * ratio),
+		height:
+			Math.round(canvasRect.top * ratio + canvasRect.height * ratio) -
+			Math.round(canvasRect.top * ratio),
+	});
 }
