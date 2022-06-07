@@ -213,11 +213,13 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		const ratio = this._devicePixelRatioObservable?.value ?? win.devicePixelRatio;
 
 		const canvasRects = this._canvasElement.getClientRects();
-		if (canvasRects.length === 0) {
-			return;
-		}
-
-		const newSize = predictedBitmapSize(canvasRects[0], ratio);
+		const newSize =
+			canvasRects.length > 0 ?
+				predictedBitmapSize(canvasRects[0], ratio) :
+				size({
+					width: this._canvasElementClientSize.width * ratio,
+					height: this._canvasElementClientSize.height * ratio,
+				});
 		this._suggestNewBitmapSize(newSize);
 	}
 
