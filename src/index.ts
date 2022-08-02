@@ -6,3 +6,9 @@ export {
 	BitmapSizeChangedListener,
 	bindTo as bindCanvasElementBitmapSizeTo
 } from './canvas-element-bitmap-size.js';
+export {
+	CanvasRenderingTarget2D,
+	MediaCoordinatesRenderingScope,
+	BitmapCoordinatesRenderingScope,
+	tryCreateCanvasRenderingTarget2D
+} from './canvas-rendering-target';
