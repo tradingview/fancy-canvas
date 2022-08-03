@@ -44,28 +44,32 @@ export class CanvasRenderingTarget2D {
 	}
 
 	public useMediaCoordinateSpace<T>(f: (scope: MediaCoordinatesRenderingScope) => T): T {
-		this._context.save();
-		// do not use resetTransform to support old versions of Edge
-		this._context.setTransform(1, 0, 0, 1, 0, 0);
-		this._context.scale(this._horizontalPixelRatio, this._verticalPixelRatio);
-		const result = f({ context: this._context, mediaSize: this._mediaSize });
-		this._context.restore();
-		return result;
+		try {
+			this._context.save();
+			// do not use resetTransform to support old versions of Edge
+			this._context.setTransform(1, 0, 0, 1, 0, 0);
+			this._context.scale(this._horizontalPixelRatio, this._verticalPixelRatio);
+			return f({ context: this._context, mediaSize: this._mediaSize });
+		} finally {
+			this._context.restore();
+		}
 	}
 
 	public useBitmapCoordinateSpace<T>(f: (scope: BitmapCoordinatesRenderingScope) => T): T {
-		this._context.save();
-		// do not use resetTransform to support old versions of Edge
-		this._context.setTransform(1, 0, 0, 1, 0, 0);
-		const result = f({
-			context: this._context,
-			mediaSize: this._mediaSize,
-			bitmapSize: this._bitmapSize,
-			horizontalPixelRatio: this._horizontalPixelRatio,
-			verticalPixelRatio: this._verticalPixelRatio,
-		});
-		this._context.restore();
-		return result;
+		try {
+			this._context.save();
+			// do not use resetTransform to support old versions of Edge
+			this._context.setTransform(1, 0, 0, 1, 0, 0);
+			return f({
+				context: this._context,
+				mediaSize: this._mediaSize,
+				bitmapSize: this._bitmapSize,
+				horizontalPixelRatio: this._horizontalPixelRatio,
+				verticalPixelRatio: this._verticalPixelRatio,
+			});
+		} finally {
+			this._context.restore();
+		}
 	}
 
 	private get _horizontalPixelRatio(): number {
