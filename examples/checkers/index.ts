@@ -3,6 +3,7 @@ import {
 	CanvasElementBitmapSizeBinding,
 	size,
 	CanvasRenderingTarget2D,
+	createCanvasRenderingTarget2D,
 	tryCreateCanvasRenderingTarget2D,
 	BitmapCoordinatesRenderingScope,
 } from 'fancy-canvas';
@@ -100,10 +101,7 @@ function renderFrame() {
 			binding1.applySuggestedBitmapSize();
 		}
 
-		const target = tryCreateCanvasRenderingTarget2D(binding1);
-		if (target === null) {
-			return;
-		}
+		const target = createCanvasRenderingTarget2D(binding1);
 		drawScene(target);
 	}
 

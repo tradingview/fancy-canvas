@@ -84,6 +84,23 @@ export class CanvasRenderingTarget2D {
 /**
  * @experimental
  */
+export function createCanvasRenderingTarget2D(
+	binding: CanvasElementBitmapSizeBinding,
+	contextOptions?: CanvasRenderingContext2DSettings
+): CanvasRenderingTarget2D {
+	const mediaSize = binding.canvasElementClientSize;
+	const bitmapSize = binding.bitmapSize;
+	const context = binding.canvasElement.getContext('2d', contextOptions);
+	if (context === null) {
+		throw new Error('Could not get 2d drawing context from bound canvas element. Has the canvas already been set to a different context mode?');
+	}
+
+	return new CanvasRenderingTarget2D(context, mediaSize, bitmapSize);
+}
+
+/**
+ * @experimental
+ */
 export function tryCreateCanvasRenderingTarget2D(
 	binding: CanvasElementBitmapSizeBinding,
 	contextOptions?: CanvasRenderingContext2DSettings
