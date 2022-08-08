@@ -1,31 +1,12 @@
 import {
 	bindCanvasElementBitmapSizeTo,
 	CanvasElementBitmapSizeBinding,
-	Size,
 	size,
+	CanvasRenderingTarget2D,
+	createCanvasRenderingTarget2D,
+	tryCreateCanvasRenderingTarget2D,
+	BitmapCoordinatesRenderingScope,
 } from 'fancy-canvas';
-
-class RenderParams {
-	public readonly canvasElementClientSize: Size;
-	public readonly bitmapSize: Size;
-
-	public constructor(canvasElementClientSize: Size, bitmapSize: Size) {
-		this.canvasElementClientSize = canvasElementClientSize;
-		this.bitmapSize = bitmapSize;
-	}
-
-	public get horizontalPixelRatio(): number {
-		return this.bitmapSize.width / this.canvasElementClientSize.width;
-	}
-
-	public get verticalPixelRatio(): number {
-		return this.bitmapSize.height / this.canvasElementClientSize.height;
-	}
-}
-
-function getRenderParams(binding: CanvasElementBitmapSizeBinding): RenderParams {
-	return new RenderParams(binding.canvasElementClientSize, binding.bitmapSize);
-}
 
 let cnv0: HTMLCanvasElement | null = null;
 let cnv1: HTMLCanvasElement | null = null;
@@ -52,10 +33,13 @@ window.onload = () => {
 			if (binding1 !== null) {
 				binding1.subscribeSuggestedBitmapSizeChanged(() => {
 					window.requestAnimationFrame(renderFrame);
-					updatePixelRatioText(binding1);
+					if (binding1 === null) {
+						return;
+					}
+					updatePixelRatioText(tryCreateCanvasRenderingTarget2D(binding1));
 				});
+				updatePixelRatioText(tryCreateCanvasRenderingTarget2D(binding1));
 			}
-			updatePixelRatioText(binding1);
 		}
 
 	}
@@ -108,7 +92,8 @@ function renderFrame() {
 		}
 
 		const cnv0Size = size({ width: cnv0.width, height: cnv0.height });
-		drawScene(ctx, new RenderParams(cnv0Size, cnv0Size));
+		const target = new CanvasRenderingTarget2D(ctx, cnv0Size, cnv0Size);
+		drawScene(target);
 	}
 
 	{
@@ -116,12 +101,8 @@ function renderFrame() {
 			binding1.applySuggestedBitmapSize();
 		}
 
-		const ctx = cnv1.getContext("2d");
-		if (ctx === null) {
-			return;
-		}
-
-		drawScene(ctx, getRenderParams(binding1));
+		const target = createCanvasRenderingTarget2D(binding1);
+		drawScene(target);
 	}
 
 	{
@@ -129,78 +110,80 @@ function renderFrame() {
 			binding2.applySuggestedBitmapSize();
 		}
 
-		const ctx = cnv2.getContext("2d");
-		if (ctx === null) {
+		const target = tryCreateCanvasRenderingTarget2D(binding2);
+		if (target === null) {
 			return;
 		}
 
-		drawGrid(ctx, getRenderParams(binding2));
+		target.useBitmapCoordinateSpace(drawGrid);
 	}
 }
 
-function drawGrid(ctx: CanvasRenderingContext2D, renderParams: RenderParams) {
+function drawGrid({ context: ctx, bitmapSize, horizontalPixelRatio, verticalPixelRatio }: BitmapCoordinatesRenderingScope) {
 	ctx.fillStyle = "yellow";
-	ctx.fillRect(0, 0, renderParams.bitmapSize.width, renderParams.bitmapSize.height);
+	ctx.fillRect(0, 0, bitmapSize.width, bitmapSize.height);
 
 	ctx.strokeStyle = "black";
-	ctx.lineWidth = Math.max(1, Math.floor(renderParams.horizontalPixelRatio));
+	ctx.lineWidth = Math.max(1, Math.floor(horizontalPixelRatio));
 	const count = 10;
 	const a = 20;
 	const offset = (ctx.lineWidth % 2) ? 0.5 : 0;
 	ctx.beginPath();
 	for (let y = 0; y < count; y++) {
-		const r = Math.round(y * a * renderParams.verticalPixelRatio) + offset;
+		const r = Math.round(y * a * verticalPixelRatio) + offset;
 		ctx.moveTo(0, r);
-		ctx.lineTo(renderParams.bitmapSize.width, r);
+		ctx.lineTo(bitmapSize.width, r);
 	}
 	ctx.stroke();
 	ctx.beginPath();
 	for (let x = 0; x < count; x++) {
-		const r = Math.round(x * a * renderParams.horizontalPixelRatio) + offset;
+		const r = Math.round(x * a * horizontalPixelRatio) + offset;
 		ctx.moveTo(r, 0);
-		ctx.lineTo(r, renderParams.bitmapSize.height);
+		ctx.lineTo(r, bitmapSize.height);
 	}
 	ctx.stroke();
 }
 
-function drawScene(ctx: CanvasRenderingContext2D, renderParams: RenderParams) {
-	ctx.fillStyle = "black";
-	ctx.fillRect(0, 0, renderParams.bitmapSize.width, renderParams.bitmapSize.height);
-
-	const count = 10;
-	for (let x = 0; x < count; x++) {
-		for (let y = 0; y < count; y++) {
-			if ((x + y) % 2 === 0) {
-				const a = 20;
-				ctx.fillStyle = `rgba(${Math.round(x * 255 / count)}, ${Math.round(y * 255 / count)}, 0, 255)`;
-				const left = Math.round((x * a + offset.x) * renderParams.horizontalPixelRatio);
-				const top = Math.round((y * a + offset.y) * renderParams.verticalPixelRatio);
-				const width = Math.round(a * renderParams.horizontalPixelRatio);
-				const height = Math.round(a * renderParams.verticalPixelRatio);
-				ctx.fillRect(left, top, width, height);
+function drawScene(target: CanvasRenderingTarget2D) {
+	target.useBitmapCoordinateSpace(({ context: ctx, bitmapSize, horizontalPixelRatio, verticalPixelRatio }) => {
+		ctx.fillStyle = "black";
+		ctx.fillRect(0, 0, bitmapSize.width, bitmapSize.height);
+	
+		const count = 10;
+		for (let x = 0; x < count; x++) {
+			for (let y = 0; y < count; y++) {
+				if ((x + y) % 2 === 0) {
+					const a = 20;
+					ctx.fillStyle = `rgba(${Math.round(x * 255 / count)}, ${Math.round(y * 255 / count)}, 0, 255)`;
+					const left = Math.round((x * a + offset.x) * horizontalPixelRatio);
+					const top = Math.round((y * a + offset.y) * verticalPixelRatio);
+					const width = Math.round(a * horizontalPixelRatio);
+					const height = Math.round(a * verticalPixelRatio);
+					ctx.fillRect(left, top, width, height);
+				}
 			}
 		}
-	}
+	});
 
-	ctx.font = "40px arial";
-	ctx.fillStyle = "white";
-	const text = "You win!";
-	const textMetrics = ctx.measureText(text);
-	ctx.save();
-	ctx.setTransform(renderParams.horizontalPixelRatio, 0, 0, renderParams.verticalPixelRatio, 0, 0);
-	ctx.fillText(
-		"You win!",
-		renderParams.canvasElementClientSize.width / 2 - textMetrics.width / 2 + offset.x,
-		renderParams.canvasElementClientSize.height / 2 + offset.y,
-	);
-	ctx.restore();
+	target.useMediaCoordinateSpace(({ context: ctx, mediaSize }) => {
+		ctx.font = "40px arial";
+		ctx.fillStyle = "white";
+		const text = "You win!";
+		const textMetrics = ctx.measureText(text);
+		ctx.fillText(
+			"You win!",
+			mediaSize.width / 2 - textMetrics.width / 2 + offset.x,
+			mediaSize.height / 2 + offset.y,
+		);
+	});
 }
 
-function updatePixelRatioText(binding: CanvasElementBitmapSizeBinding | null): void {
-	if (binding !== null) {
-		const renderParams = getRenderParams(binding);
-		(document.getElementById("header") as HTMLHeadingElement).innerText = `Pixel ratio: ${renderParams.horizontalPixelRatio} ⨯ ${renderParams.verticalPixelRatio}`;
+function updatePixelRatioText(target: CanvasRenderingTarget2D | null): void {
+	if (target !== null) {
+		target.useBitmapCoordinateSpace(({ horizontalPixelRatio, verticalPixelRatio }) => {
+			(document.getElementById("header") as HTMLHeadingElement).innerText = `Pixel ratio: ${horizontalPixelRatio} ⨯ ${verticalPixelRatio}`;
+		});
 	} else {
-		(document.getElementById("header") as HTMLHeadingElement).innerText = 'Binding does not exist';
+		(document.getElementById("header") as HTMLHeadingElement).innerText = 'Rendering target does not exist';
 	}
 }
