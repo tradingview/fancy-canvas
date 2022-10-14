@@ -8,7 +8,7 @@ var input = JSON.parse(fs.readFileSync(inputPath, 'utf-8'));
 var output = {
 	// identification
 	name: input.name,
-	version: process.env["CIRCLE_TAG"],
+	version: process.env["GITHUB_REF_NAME"],
 
 	// discovery
 	author: input.author,
