@@ -1,0 +1,43 @@
+name: Build, lint, test
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup Node.js 16
+      uses: actions/setup-node@v3
+      with:
+        node-version: 16
+    - run: npm install
+    - run: npm run build
+    - run: npm run lint
+    - uses: actions/upload-artifact@v3
+      with:
+        name: dist
+        path: dist
+        retention-days: 5
+
+  pack:
+    needs: build
+    if: github.ref_type == 'tag'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node.js 16
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Download dist directory
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist
+      - run: mkdir out && cd dist/fancy-canvas && npm pack --pack-destination ../../out
+      - uses: actions/upload-artifact@v3
+        with:
+          name: Package tarball
+          path: out/fancy-canvas-${{ github.ref_name }}.tgz
+          retention-days: 30
