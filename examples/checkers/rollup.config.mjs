@@ -12,7 +12,7 @@ export default {
 
 	plugins: [
 		nodeResolve({
-			moduleDirectories: ["../../dist"],
+			modulePaths: ["../../dist"],
 		}),
 		typescript(),
 	],
