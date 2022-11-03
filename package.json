@@ -1,8 +1,9 @@
 {
   "scripts": {
-    "build": "npm run build:src && npm run build:examples",
-    "build:src": "npm run build --prefix src",
-    "build:examples": "npm run build --prefix examples/checkers",
+    "build": "npm run src:build && npm run examples:init && npm run examples:build",
+    "src:build": "npm run build --prefix src",
+    "examples:init": "cd examples && cd checkers && npm install",
+    "examples:build": "npm run build --prefix examples/checkers",
     "lint": "eslint --ext .ts examples/ src/"
   },
   "devDependencies": {
