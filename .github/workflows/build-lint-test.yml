@@ -19,6 +19,26 @@ jobs:
         path: dist
         retention-days: 5
 
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16, 18]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Download dist directory
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist
+      - run: npm ci
+      - run: npm test
+
   pack:
     needs: build
     if: github.ref_type == 'tag'

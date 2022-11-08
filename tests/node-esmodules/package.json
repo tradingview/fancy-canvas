@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "ts-node-esm index.mts"
+  }
+}

@@ -8,7 +8,9 @@ var input = JSON.parse(fs.readFileSync(inputPath, 'utf-8'));
 var output = {
 	// identification
 	name: input.name,
-	version: process.env["GITHUB_REF_NAME"],
+	version: process.env['GITHUB_REF_TYPE'] === 'tag' ?
+		process.env['GITHUB_REF_NAME'] :
+		input.version,
 
 	// discovery
 	author: input.author,

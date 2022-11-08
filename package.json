@@ -4,7 +4,9 @@
     "src:build": "npm run build --prefix src",
     "examples:init": "cd examples && cd checkers && npm install",
     "examples:build": "npm run build --prefix examples/checkers",
-    "lint": "eslint --ext .ts examples/ src/"
+    "tests:init": "cd tests && npm install",
+    "test": "npm run tests:init && npm start --prefix tests",
+    "lint": "eslint --ext .ts,.mts examples/ src/ tests/"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.0.1",

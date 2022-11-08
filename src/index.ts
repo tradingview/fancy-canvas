@@ -12,4 +12,4 @@ export {
 	BitmapCoordinatesRenderingScope,
 	createCanvasRenderingTarget2D,
 	tryCreateCanvasRenderingTarget2D
-} from './canvas-rendering-target';
+} from './canvas-rendering-target.js';
