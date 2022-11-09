@@ -1,5 +1,5 @@
-import { Size } from './size';
-import { Binding as CanvasElementBitmapSizeBinding } from './canvas-element-bitmap-size';
+import { Size } from './size.js';
+import { Binding as CanvasElementBitmapSizeBinding } from './canvas-element-bitmap-size.js';
 
 /**
  * @experimental
