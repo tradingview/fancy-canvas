@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "ts-node index.cts"
+  }
+}

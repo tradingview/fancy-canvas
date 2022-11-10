@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "start": "npm start --prefix node-esmodules"
+    "start": "npm start --prefix node-commonjs && npm start --prefix node-esmodules"
   },
   "dependencies": {
     "fancy-canvas": "file:../dist/fancy-canvas",

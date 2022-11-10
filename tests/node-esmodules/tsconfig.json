@@ -1,6 +1,7 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"lib": ["dom", "es2015"]
+		"module": "es2022",
+		"moduleResolution": "node16"
 	}
 }

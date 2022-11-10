@@ -3,27 +3,6 @@
 	"compilerOptions": {
 		"declaration": true,
 		"outDir": "../dist/fancy-canvas",
-		"baseUrl": "./",
-		"moduleResolution": "node",
-		"plugins": [
-			{
-				"transform": "ts-transform-import-path-rewrite",
-				"import": "transform",
-				"type": "config",
-				"after": true,
-				"alias": {
-					"^(.*)\\.js$": "$1.mjs"
-				}
-			},
-			{
-				"transform": "ts-transform-import-path-rewrite",
-				"import": "transform",
-				"type": "config",
-				"afterDeclarations": true,
-				"alias": {
-					"^(.*)\\.js$": "$1.mjs"
-				}
-			},
-		]
+		"baseUrl": "./"
 	}
 }
