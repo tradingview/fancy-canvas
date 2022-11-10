@@ -1,5 +1,9 @@
 root = true
 
-[*.ts]
+[*]
 indent_style = tab
 indent_size = 4
+
+[{*.yml,package.json}]
+indent_style = space
+indent_size = 2
