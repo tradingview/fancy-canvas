@@ -1,6 +1,10 @@
 {
+  "private": true,
   "scripts": {
     "build": "rollup -c && copyfiles *.html *.css ../../bin/checkers"
   },
-  "private": true
+  "dependencies": {
+    "fancy-canvas": "file:../../dist/fancy-canvas"
+  },
+  "type": "module"
 }

@@ -11,9 +11,7 @@ export default {
 	],
 
 	plugins: [
-		nodeResolve({
-			modulePaths: ["../../dist"],
-		}),
+		nodeResolve(),
 		typescript(),
 	],
 }

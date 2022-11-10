@@ -1,7 +1,7 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"declaration": true,
-		"outDir": "../dist/fancy-canvas",
+		"module": "es2022",
+		"moduleResolution": "node16"
 	}
 }

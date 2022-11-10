@@ -8,7 +8,9 @@ var input = JSON.parse(fs.readFileSync(inputPath, 'utf-8'));
 var output = {
 	// identification
 	name: input.name,
-	version: process.env["GITHUB_REF_NAME"],
+	version: process.env['GITHUB_REF_TYPE'] === 'tag' ?
+		process.env['GITHUB_REF_NAME'] :
+		input.version,
 
 	// discovery
 	author: input.author,
@@ -37,6 +39,6 @@ var output = {
 	type: input.type,
 
 	// contents
-	files: ["**/*.js", "**/*.d.ts"],
+	files: ["**/*.mjs", "**/*.d.mts"],
 };
 fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));

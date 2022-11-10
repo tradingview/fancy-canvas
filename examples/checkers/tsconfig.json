@@ -1,9 +1,8 @@
 {
 	"extends": "../../tsconfig.json",
 	"compilerOptions": {
-		"baseUrl": "../../dist",
 		"outDir": "../../bin/checkers",
 		"lib": ["dom", "es2015"],
-		"module": "es2015"
+		"module": "node16"
 	}
 }
