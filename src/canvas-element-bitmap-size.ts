@@ -214,7 +214,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 
 		const canvasRects = this._canvasElement.getClientRects();
 		const newSize =
-			canvasRects.length > 0 ?
+			canvasRects[0] !== undefined ?
 				predictedBitmapSize(canvasRects[0], ratio) :
 				size({
 					width: this._canvasElementClientSize.width * ratio,
@@ -232,7 +232,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 
 		this._canvasElementResizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
 			const entry = entries.find((entry: ResizeObserverEntry) => entry.target === this._canvasElement);
-			if (!entry || !entry.devicePixelContentBoxSize) {
+			if (!entry || !entry.devicePixelContentBoxSize || !entry.devicePixelContentBoxSize[0]) {
 				return;
 			}
 			const entrySize = entry.devicePixelContentBoxSize[0];
