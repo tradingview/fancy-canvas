@@ -1,6 +1,7 @@
 {
 	"compilerOptions": {
 		"strict": true,
+		"exactOptionalPropertyTypes": true,
 		"forceConsistentCasingInFileNames": true,
 		"importHelpers": true,
 		"noEmitOnError": true,
