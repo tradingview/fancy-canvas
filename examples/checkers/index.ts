@@ -15,7 +15,7 @@ let binding1: CanvasElementBitmapSizeBinding | null = null;
 let binding2: CanvasElementBitmapSizeBinding | null = null;
 window.onload = () => {
 	{
-		const c = document.getElementById("cnv0");
+		const c = document.getElementById('cnv0');
 		if (c instanceof HTMLCanvasElement) {
 			cnv0 = c;
 			cnv0.width = cnv0.style.width !== null ? parseInt(cnv0.style.width) : 0;
@@ -24,7 +24,7 @@ window.onload = () => {
 	}
 
 	{
-		const c = document.getElementById("cnv1");
+		const c = document.getElementById('cnv1');
 		if (c instanceof HTMLCanvasElement) {
 			cnv1 = c;
 			binding1 = bindCanvasElementBitmapSizeTo(c, { type: 'device-pixel-content-box' });
@@ -45,7 +45,7 @@ window.onload = () => {
 	}
 
 	{
-		const c = document.getElementById("cnv2");
+		const c = document.getElementById('cnv2');
 		if (c instanceof HTMLCanvasElement) {
 			cnv2 = c;
 			binding2 = bindCanvasElementBitmapSizeTo(c, { type: 'device-pixel-content-box' });
@@ -122,10 +122,10 @@ function renderFrame() {
 }
 
 function drawGrid({ context: ctx, bitmapSize, horizontalPixelRatio, verticalPixelRatio }: BitmapCoordinatesRenderingScope) {
-	ctx.fillStyle = "yellow";
+	ctx.fillStyle = 'yellow';
 	ctx.fillRect(0, 0, bitmapSize.width, bitmapSize.height);
 
-	ctx.strokeStyle = "black";
+	ctx.strokeStyle = 'black';
 	ctx.lineWidth = Math.max(1, Math.floor(horizontalPixelRatio));
 	const count = 10;
 	const a = 20;
@@ -148,7 +148,7 @@ function drawGrid({ context: ctx, bitmapSize, horizontalPixelRatio, verticalPixe
 
 function drawScene(target: CanvasRenderingTarget2D) {
 	target.useBitmapCoordinateSpace(({ context: ctx, bitmapSize, horizontalPixelRatio, verticalPixelRatio }) => {
-		ctx.fillStyle = "black";
+		ctx.fillStyle = 'black';
 		ctx.fillRect(0, 0, bitmapSize.width, bitmapSize.height);
 	
 		const count = 10;
@@ -168,12 +168,12 @@ function drawScene(target: CanvasRenderingTarget2D) {
 	});
 
 	target.useMediaCoordinateSpace(({ context: ctx, mediaSize }) => {
-		ctx.font = "40px arial";
-		ctx.fillStyle = "white";
-		const text = "You win!";
+		ctx.font = '40px arial';
+		ctx.fillStyle = 'white';
+		const text = 'You win!';
 		const textMetrics = ctx.measureText(text);
 		ctx.fillText(
-			"You win!",
+			'You win!',
 			mediaSize.width / 2 - textMetrics.width / 2 + offset.x,
 			mediaSize.height / 2 + offset.y,
 		);
@@ -183,9 +183,9 @@ function drawScene(target: CanvasRenderingTarget2D) {
 function updatePixelRatioText(target: CanvasRenderingTarget2D | null): void {
 	if (target !== null) {
 		target.useBitmapCoordinateSpace(({ horizontalPixelRatio, verticalPixelRatio }) => {
-			(document.getElementById("header") as HTMLHeadingElement).innerText = `Pixel ratio: ${horizontalPixelRatio} ⨯ ${verticalPixelRatio}`;
+			(document.getElementById('header') as HTMLHeadingElement).innerText = `Pixel ratio: ${horizontalPixelRatio} ⨯ ${verticalPixelRatio}`;
 		});
 	} else {
-		(document.getElementById("header") as HTMLHeadingElement).innerText = 'Rendering target does not exist';
+		(document.getElementById('header') as HTMLHeadingElement).innerText = 'Rendering target does not exist';
 	}
 }

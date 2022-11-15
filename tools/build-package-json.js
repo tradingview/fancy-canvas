@@ -39,6 +39,6 @@ var output = {
 	type: input.type,
 
 	// contents
-	files: ["**/*.mjs", "**/*.d.mts"],
+	files: ['**/*.mjs', '**/*.d.mts'],
 };
 fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));

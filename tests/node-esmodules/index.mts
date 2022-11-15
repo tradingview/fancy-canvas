@@ -1,4 +1,4 @@
-import { size } from "fancy-canvas";
+import { size } from 'fancy-canvas';
 
 const s = size({
 	width: 10, height: 20,

@@ -58,7 +58,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 
 	public dispose(): void {
 		if (this._canvasElement === null) {
-			throw new Error("Object is disposed");
+			throw new Error('Object is disposed');
 		}
 		this._canvasElementResizeObserver?.disconnect();
 		this._canvasElementResizeObserver = null;
@@ -71,7 +71,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 
 	public get canvasElement(): HTMLCanvasElement {
 		if (this._canvasElement === null) {
-			throw new Error("Object is disposed");
+			throw new Error('Object is disposed');
 		}
 		return this._canvasElement;
 	}
