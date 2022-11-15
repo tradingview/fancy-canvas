@@ -3,7 +3,7 @@ import tsPlugin from '@typescript-eslint/eslint-plugin';
 import globals from 'globals';
 
 export default [
-	//'eslint:recommended',
+	'eslint:recommended',
 	//'plugin:@typescript-eslint/recommended',
 	{
 		ignores: [
@@ -39,6 +39,8 @@ export default [
 		rules: {
 			// TypeScript does it even better
 			"no-undef": "off",
+			"no-unused-vars": "off",
+			"@typescript-eslint/no-unused-vars": "error"
 		},
 	}
 ];
