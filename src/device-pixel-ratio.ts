@@ -24,7 +24,7 @@ class Observable implements BehaviorSubject<number>, Disposable {
 	public subscribe(next: (value: number) => void): Unsubscribable {
 		const observer: NextObserver<number> = { next };
 		this._observers.push(observer);
-		return { unsubscribe: () => this._observers = this._observers.filter(o => o != observer) };
+		return { unsubscribe: () => this._observers = this._observers.filter(o => o !== observer) };
 	}
 	
 	private _installResolutionListener(): void {

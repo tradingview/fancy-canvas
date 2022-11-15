@@ -104,7 +104,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 	}
 
 	public unsubscribeBitmapSizeChanged(listener: BitmapSizeChangedListener): void {
-		this._bitmapSizeChangedListeners = this._bitmapSizeChangedListeners.filter(l => l != listener);
+		this._bitmapSizeChangedListeners = this._bitmapSizeChangedListeners.filter(l => l !== listener);
 	}
 
 	public get suggestedBitmapSize(): Size | null {
@@ -116,7 +116,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 	}
 
 	public unsubscribeSuggestedBitmapSizeChanged(listener: SuggestedBitmapSizeChangedListener): void {
-		this._suggestedBitmapSizeChangedListeners = this._suggestedBitmapSizeChangedListeners.filter(l => l != listener);
+		this._suggestedBitmapSizeChangedListeners = this._suggestedBitmapSizeChangedListeners.filter(l => l !== listener);
 	}
 
 	public applySuggestedBitmapSize(): void {
@@ -190,7 +190,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		}
 
 		const win = canvasElementWindow(this._canvasElement);
-		if (win == null) {
+		if (win === null) {
 			throw new Error('No window is associated with the canvas');
 		}
 
@@ -206,7 +206,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		}
 
 		const win = canvasElementWindow(this._canvasElement);
-		if (win == null) {
+		if (win === null) {
 			return;
 		}
 
