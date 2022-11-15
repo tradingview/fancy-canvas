@@ -18,8 +18,8 @@ window.onload = () => {
 		const c = document.getElementById('cnv0');
 		if (c instanceof HTMLCanvasElement) {
 			cnv0 = c;
-			cnv0.width = cnv0.style.width === null ? 0 : parseInt(cnv0.style.width);
-			cnv0.height = cnv0.style.height === null ? 0 : parseInt(cnv0.style.height);
+			cnv0.width = cnv0.style.width === null ? 0 : parseInt(cnv0.style.width, 10);
+			cnv0.height = cnv0.style.height === null ? 0 : parseInt(cnv0.style.height, 10);
 		}
 	}
 

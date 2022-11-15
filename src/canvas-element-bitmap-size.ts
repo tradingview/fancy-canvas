@@ -271,7 +271,7 @@ function canvasElementWindow(canvasElement: HTMLCanvasElement): Window | null {
 function isDevicePixelContentBoxSupported(): Promise<boolean> {
 	return new Promise((resolve: (val: boolean) => void) => {
 		const ro = new ResizeObserver((entries: ResizeObserverEntry[]) => {
-			resolve(entries.every((entry) => 'devicePixelContentBoxSize' in entry));
+			resolve(entries.every(entry => 'devicePixelContentBoxSize' in entry));
 			ro.disconnect();
 		});
 		ro.observe(document.body, { box: 'device-pixel-content-box' });
