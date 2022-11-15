@@ -18,8 +18,8 @@ window.onload = () => {
 		const c = document.getElementById('cnv0');
 		if (c instanceof HTMLCanvasElement) {
 			cnv0 = c;
-			cnv0.width = cnv0.style.width !== null ? parseInt(cnv0.style.width) : 0;
-			cnv0.height = cnv0.style.height !== null ? parseInt(cnv0.style.height) : 0;
+			cnv0.width = cnv0.style.width === null ? 0 : parseInt(cnv0.style.width);
+			cnv0.height = cnv0.style.height === null ? 0 : parseInt(cnv0.style.height);
 		}
 	}
 
@@ -165,7 +165,7 @@ function drawScene(target: CanvasRenderingTarget2D) {
 	target.useBitmapCoordinateSpace(({ context: ctx, bitmapSize, horizontalPixelRatio, verticalPixelRatio }) => {
 		ctx.fillStyle = 'black';
 		ctx.fillRect(0, 0, bitmapSize.width, bitmapSize.height);
-	
+
 		const count = 10;
 		for (let x = 0; x < count; x++) {
 			for (let y = 0; y < count; y++) {
@@ -196,6 +196,7 @@ function drawScene(target: CanvasRenderingTarget2D) {
 }
 
 function updatePixelRatioText(target: CanvasRenderingTarget2D | null): void {
+	// eslint-disable-next-line no-negated-condition
 	if (target !== null) {
 		target.useBitmapCoordinateSpace(({ horizontalPixelRatio, verticalPixelRatio }) => {
 			(document.getElementById('header') as HTMLHeadingElement).innerText = `Pixel ratio: ${horizontalPixelRatio} ⨯ ${verticalPixelRatio}`;

@@ -14,7 +14,7 @@ export interface Binding extends Disposable {
 	 */
 	readonly canvasElementClientSize: Size;
 	resizeCanvasElement(clientSize: { width: number, height: number }): void;
-	
+
 	readonly bitmapSize: Size;
 	subscribeBitmapSizeChanged(listener: BitmapSizeChangedListener): void;
 	unsubscribeBitmapSizeChanged(listener: BitmapSizeChangedListener): void;
@@ -95,7 +95,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		this._canvasElementClientSize = size(clientSize);
 		this.canvasElement.style.width = `${this._canvasElementClientSize.width}px`;
 		this.canvasElement.style.height = `${this._canvasElementClientSize.height}px`;
-		
+
 		this._invalidateBitmapSize();
 	}
 
@@ -214,6 +214,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 
 		const canvasRects = this._canvasElement.getClientRects();
 		const newSize =
+			// eslint-disable-next-line no-negated-condition
 			canvasRects[0] !== undefined ?
 				predictedBitmapSize(canvasRects[0], ratio) :
 				size({

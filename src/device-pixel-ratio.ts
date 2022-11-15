@@ -24,9 +24,13 @@ class Observable implements BehaviorSubject<number>, Disposable {
 	public subscribe(next: (value: number) => void): Unsubscribable {
 		const observer: NextObserver<number> = { next };
 		this._observers.push(observer);
-		return { unsubscribe: () => this._observers = this._observers.filter(o => o !== observer) };
+		return {
+			unsubscribe: () => {
+				this._observers = this._observers.filter(o => o !== observer);
+			},
+		};
 	}
-	
+
 	private _installResolutionListener(): void {
 		if (this._resolutionMediaQueryList !== null) {
 			throw new Error('Resolution listener is already installed');
@@ -50,7 +54,7 @@ class Observable implements BehaviorSubject<number>, Disposable {
 		this._uninstallResolutionListener();
 		this._installResolutionListener();
 	}
-	
+
 	private _onResolutionChanged(): void {
 		this._observers.forEach(observer => observer.next(this._window.devicePixelRatio));
 		this._reinstallResolutionListener();
