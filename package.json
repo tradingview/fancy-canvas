@@ -8,7 +8,7 @@
     "test": "npm run tests:init && npm start --prefix tests",
     "lint": "npm run lint:ec && npm run lint:eslint",
     "lint:ec": "ec",
-    "lint:eslint": "eslint --ext .ts,.mts examples/ src/ tests/"
+    "lint:eslint": "cross-env ESLINT_USE_FLAT_CONFIG=true eslint -c eslint.config.mjs ."
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.0.1",
@@ -16,6 +16,7 @@
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
     "copyfiles": "2.4.1",
+    "cross-env": "^7.0.3",
     "editorconfig-checker": "^4.0.2",
     "eslint": "^8.26.0",
     "replace-ext": "^2.0.0",
