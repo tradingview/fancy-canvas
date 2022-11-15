@@ -14,4 +14,4 @@ export default {
 		nodeResolve(),
 		typescript(),
 	],
-}
+};

@@ -63,7 +63,6 @@ export default [
 			"quote-props": "off",
 			"quotes": "off",
 			"radix": "off",
-			"semi": "off",
 			"sort-imports": "off",
 			"sort-keys": "off",
 			"space-before-function-paren": ["error", "never"],

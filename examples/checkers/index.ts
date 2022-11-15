@@ -65,9 +65,11 @@ window.onload = () => {
 type Point = { x: number, y: number };
 let originalPoint: Point | null = null;
 const offset: Point = { x: 0, y: 0 };
+
 window.onmousedown = (ev: MouseEvent) => {
 	originalPoint = { x: ev.clientX, y: ev.clientY };
-}
+};
+
 window.onmousemove = (ev: MouseEvent) => {
 	if (originalPoint === null || ev.buttons === 0) {
 		return;
@@ -78,7 +80,7 @@ window.onmousemove = (ev: MouseEvent) => {
 	originalPoint = { x: ev.clientX, y: ev.clientY };
 
 	window.requestAnimationFrame(renderFrame);
-}
+};
 
 function renderFrame() {
 	if (cnv0 === null || cnv1 === null || cnv2 === null || binding1 === null || binding2 === null) {
