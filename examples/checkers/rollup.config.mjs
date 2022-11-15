@@ -7,7 +7,7 @@ export default {
 		{
 			file: '../../bin/checkers/index.js',
 			format: 'iife',
-		}
+		},
 	],
 
 	plugins: [

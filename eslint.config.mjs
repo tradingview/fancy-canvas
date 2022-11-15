@@ -8,7 +8,7 @@ export default [
 	{
 		ignores: [
 			'bin/**',
-			'dist/**'
+			'dist/**',
 		],
 	},
 	{
@@ -23,7 +23,7 @@ export default [
 			'array-element-newline': ['error', 'consistent'],
 			'arrow-parens': 'off',
 			'capitalized-comments': 'off',
-			'comma-dangle': 'off',
+			'comma-dangle': ['error', 'always-multiline'],
 			'dot-location': 'off',
 			'dot-notation': 'off',
 			'func-style': 'off',
@@ -86,5 +86,5 @@ export default [
 			'@typescript-eslint/no-unused-vars': 'error',
 			'@typescript-eslint/no-use-before-define': ['error', 'nofunc'],
 		},
-	}
+	},
 ];
