@@ -32,7 +32,7 @@ export default [
 			"function-paren-newline": "off",
 			"id-length": "off",
 			"implicit-arrow-linebreak": "off",
-			"indent": "off",
+			"indent": ["error", "tab"],
 			"lines-around-comment": "off",
 			"lines-between-class-members": "off",
 			"max-len": "off",

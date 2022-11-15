@@ -275,7 +275,7 @@ function isDevicePixelContentBoxSupported(): Promise<boolean> {
 		});
 		ro.observe(document.body, { box: 'device-pixel-content-box' });
 	})
-	.catch(() => false);
+		.catch(() => false);
 }
 
 function predictedBitmapSize(canvasRect: DOMRect, ratio: number): Size {
