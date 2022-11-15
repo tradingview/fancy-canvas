@@ -12,7 +12,10 @@ export function size({ width, height }: { width: number, height: number }): Size
 		throw new Error('Negative height is not allowed for Size');
 	}
 
-	return { width, height } as Size;
+	return {
+		width,
+		height,
+	} as Size;
 }
 
 export function equalSizes(first: { width: number, height: number }, second: { width: number, height: number }): boolean {

@@ -62,12 +62,21 @@ window.onload = () => {
 	window.requestAnimationFrame(renderFrame);
 };
 
-type Point = { x: number, y: number };
+type Point = {
+	x: number;
+	y: number;
+};
 let originalPoint: Point | null = null;
-const offset: Point = { x: 0, y: 0 };
+const offset: Point = {
+	x: 0,
+	y: 0,
+};
 
 window.onmousedown = (ev: MouseEvent) => {
-	originalPoint = { x: ev.clientX, y: ev.clientY };
+	originalPoint = {
+		x: ev.clientX,
+		y: ev.clientY,
+	};
 };
 
 window.onmousemove = (ev: MouseEvent) => {
@@ -77,7 +86,10 @@ window.onmousemove = (ev: MouseEvent) => {
 
 	offset.x += ev.clientX - originalPoint.x;
 	offset.y += ev.clientY - originalPoint.y;
-	originalPoint = { x: ev.clientX, y: ev.clientY };
+	originalPoint = {
+		x: ev.clientX,
+		y: ev.clientY,
+	};
 
 	window.requestAnimationFrame(renderFrame);
 };
@@ -93,7 +105,10 @@ function renderFrame() {
 			return;
 		}
 
-		const cnv0Size = size({ width: cnv0.width, height: cnv0.height });
+		const cnv0Size = size({
+			width: cnv0.width,
+			height: cnv0.height,
+		});
 		const target = new CanvasRenderingTarget2D(ctx, cnv0Size, cnv0Size);
 		drawScene(target);
 	}

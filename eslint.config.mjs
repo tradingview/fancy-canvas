@@ -55,7 +55,6 @@ export default [
 			'no-underscore-dangle': 'off',
 			'no-var': 'off',
 			'object-curly-spacing': ['error', 'always'],
-			'object-property-newline': 'off',
 			'one-var': 'off',
 			'operator-linebreak': 'off',
 			'padded-blocks': 'off',
