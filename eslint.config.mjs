@@ -40,7 +40,6 @@ export default [
 			"multiline-ternary": "off",
 			"no-confusing-arrow": "off",
 			"no-console": "off",
-			"no-else-return": "off",
 			"no-extra-parens": "off",
 			"no-magic-numbers": "off",
 			"no-mixed-operators": "off",

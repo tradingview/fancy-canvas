@@ -255,9 +255,9 @@ export type BindingTarget = {
 export function bindTo(canvasElement: HTMLCanvasElement, target: BindingTarget): Binding {
 	if (target.type === 'device-pixel-content-box') {
 		return new DevicePixelContentBoxBinding(canvasElement, target.transform, target.options);
-	} else {
-		throw new Error('Unsupported binding target');
 	}
+
+	throw new Error('Unsupported binding target');
 }
 
 function canvasElementWindow(canvasElement: HTMLCanvasElement): Window | null {
