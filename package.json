@@ -19,6 +19,7 @@
     "cross-env": "^7.0.3",
     "editorconfig-checker": "^4.0.2",
     "eslint": "^8.26.0",
+    "globals": "^13.17.0",
     "replace-ext": "^2.0.0",
     "rollup": "^3.2.3",
     "ts-transform-import-path-rewrite": "^0.3.0",

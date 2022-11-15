@@ -1,5 +1,6 @@
 import tsParser from '@typescript-eslint/parser';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
+import globals from 'globals';
 
 export default [
 	//'eslint:recommended',
@@ -8,7 +9,19 @@ export default [
 		ignores: [
 			"bin/**",
 			"dist/**"
-		]
+		],
+	},
+	{
+		// tools/
+		languageOptions: {
+			globals: {
+				...globals.commonjs,
+				...globals.node,
+			},
+		},
+		rules: {
+			"no-undef": "error",
+		},
 	},
 	{
 		files: [
@@ -22,6 +35,10 @@ export default [
 		},
 		plugins: {
 			'@typescript-eslint': tsPlugin,
-		}
+		},
+		rules: {
+			// TypeScript does it even better
+			"no-undef": "off",
+		},
 	}
 ];
