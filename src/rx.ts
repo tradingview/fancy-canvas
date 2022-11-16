@@ -1,9 +1,9 @@
 export interface NextObserver<T> {
-    next: (value: T) => void;
+	next: (value: T) => void;
 }
 
 export interface Unsubscribable {
-    unsubscribe(): void;
+	unsubscribe(): void;
 }
 
 export interface Subscribable<T> {

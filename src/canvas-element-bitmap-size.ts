@@ -1,7 +1,7 @@
 import Disposable from './disposable.js';
 import { equalSizes, Size, size } from './size.js';
 import { BehaviorSubject } from './rx.js';
-import { createObservable as createDevicePixelRatioObservable } from './device-pixel-ratio.js'
+import { createObservable as createDevicePixelRatioObservable } from './device-pixel-ratio.js';
 
 export type BitmapSizeChangedListener = (this: Binding, oldSize: Size, newSize: Size) => void;
 export type BitmapSizeTransformer = (bitmapSize: Size, canvasElementClientSize: Size) => { width: number, height: number };
@@ -14,7 +14,7 @@ export interface Binding extends Disposable {
 	 */
 	readonly canvasElementClientSize: Size;
 	resizeCanvasElement(clientSize: { width: number, height: number }): void;
-	
+
 	readonly bitmapSize: Size;
 	subscribeBitmapSizeChanged(listener: BitmapSizeChangedListener): void;
 	unsubscribeBitmapSizeChanged(listener: BitmapSizeChangedListener): void;
@@ -58,7 +58,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 
 	public dispose(): void {
 		if (this._canvasElement === null) {
-			throw new Error("Object is disposed");
+			throw new Error('Object is disposed');
 		}
 		this._canvasElementResizeObserver?.disconnect();
 		this._canvasElementResizeObserver = null;
@@ -71,7 +71,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 
 	public get canvasElement(): HTMLCanvasElement {
 		if (this._canvasElement === null) {
-			throw new Error("Object is disposed");
+			throw new Error('Object is disposed');
 		}
 		return this._canvasElement;
 	}
@@ -95,7 +95,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		this._canvasElementClientSize = size(clientSize);
 		this.canvasElement.style.width = `${this._canvasElementClientSize.width}px`;
 		this.canvasElement.style.height = `${this._canvasElementClientSize.height}px`;
-		
+
 		this._invalidateBitmapSize();
 	}
 
@@ -104,7 +104,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 	}
 
 	public unsubscribeBitmapSizeChanged(listener: BitmapSizeChangedListener): void {
-		this._bitmapSizeChangedListeners = this._bitmapSizeChangedListeners.filter(l => l != listener);
+		this._bitmapSizeChangedListeners = this._bitmapSizeChangedListeners.filter(l => l !== listener);
 	}
 
 	public get suggestedBitmapSize(): Size | null {
@@ -116,7 +116,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 	}
 
 	public unsubscribeSuggestedBitmapSizeChanged(listener: SuggestedBitmapSizeChangedListener): void {
-		this._suggestedBitmapSizeChangedListeners = this._suggestedBitmapSizeChangedListeners.filter(l => l != listener);
+		this._suggestedBitmapSizeChangedListeners = this._suggestedBitmapSizeChangedListeners.filter(l => l !== listener);
 	}
 
 	public applySuggestedBitmapSize(): void {
@@ -190,7 +190,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		}
 
 		const win = canvasElementWindow(this._canvasElement);
-		if (win == null) {
+		if (win === null) {
 			throw new Error('No window is associated with the canvas');
 		}
 
@@ -206,7 +206,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		}
 
 		const win = canvasElementWindow(this._canvasElement);
-		if (win == null) {
+		if (win === null) {
 			return;
 		}
 
@@ -214,7 +214,8 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 
 		const canvasRects = this._canvasElement.getClientRects();
 		const newSize =
-			canvasRects.length > 0 ?
+			// eslint-disable-next-line no-negated-condition
+			canvasRects[0] !== undefined ?
 				predictedBitmapSize(canvasRects[0], ratio) :
 				size({
 					width: this._canvasElementClientSize.width * ratio,
@@ -232,7 +233,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 
 		this._canvasElementResizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
 			const entry = entries.find((entry: ResizeObserverEntry) => entry.target === this._canvasElement);
-			if (!entry || !entry.devicePixelContentBoxSize) {
+			if (!entry || !entry.devicePixelContentBoxSize || !entry.devicePixelContentBoxSize[0]) {
 				return;
 			}
 			const entrySize = entry.devicePixelContentBoxSize[0];
@@ -255,9 +256,9 @@ export type BindingTarget = {
 export function bindTo(canvasElement: HTMLCanvasElement, target: BindingTarget): Binding {
 	if (target.type === 'device-pixel-content-box') {
 		return new DevicePixelContentBoxBinding(canvasElement, target.transform, target.options);
-	} else {
-		throw new Error('Unsupported binding target');
 	}
+
+	throw new Error('Unsupported binding target');
 }
 
 function canvasElementWindow(canvasElement: HTMLCanvasElement): Window | null {
@@ -270,12 +271,12 @@ function canvasElementWindow(canvasElement: HTMLCanvasElement): Window | null {
 function isDevicePixelContentBoxSupported(): Promise<boolean> {
 	return new Promise((resolve: (val: boolean) => void) => {
 		const ro = new ResizeObserver((entries: ResizeObserverEntry[]) => {
-			resolve(entries.every((entry) => 'devicePixelContentBoxSize' in entry));
+			resolve(entries.every(entry => 'devicePixelContentBoxSize' in entry));
 			ro.disconnect();
 		});
 		ro.observe(document.body, { box: 'device-pixel-content-box' });
 	})
-	.catch(() => false);
+		.catch(() => false);
 }
 
 function predictedBitmapSize(canvasRect: DOMRect, ratio: number): Size {

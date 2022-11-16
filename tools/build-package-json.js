@@ -1,11 +1,11 @@
-var fs = require('fs');
+const fs = require('fs');
 
-var args = process.argv.slice(2);
-var inputPath = args[0];
-var outputPath = args[1];
+const args = process.argv.slice(2);
+const inputPath = args[0];
+const outputPath = args[1];
 
-var input = JSON.parse(fs.readFileSync(inputPath, 'utf-8'));
-var output = {
+const input = JSON.parse(fs.readFileSync(inputPath, 'utf-8'));
+const output = {
 	// identification
 	name: input.name,
 	version: process.env['GITHUB_REF_TYPE'] === 'tag' ?
@@ -39,6 +39,6 @@ var output = {
 	type: input.type,
 
 	// contents
-	files: ["**/*.mjs", "**/*.d.mts"],
+	files: ['**/*.mjs', '**/*.d.mts'],
 };
 fs.writeFileSync(outputPath, JSON.stringify(output, null, 2));
