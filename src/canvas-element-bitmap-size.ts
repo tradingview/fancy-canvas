@@ -4,7 +4,7 @@ import { BehaviorSubject } from './rx.js';
 import { createObservable as createDevicePixelRatioObservable } from './device-pixel-ratio.js';
 
 export type BitmapSizeChangedListener = (this: Binding, oldSize: Size, newSize: Size) => void;
-export type BitmapSizeTransformer = (bitmapSize: Size, canvasElementClientSize: Size) => { width: number, height: number };
+export type BitmapSizeTransformer = (bitmapSize: Size, canvasElementClientSize: Size) => { width: number, height: number } | null;
 export type SuggestedBitmapSizeChangedListener = (this: Binding, oldSize: Size | null, newSize: Size | null) => void;
 
 export interface Binding extends Disposable {
@@ -148,7 +148,13 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 
 	private _suggestNewBitmapSize(newSize: Size): void {
 		const oldSuggestedSize = this._suggestedBitmapSize;
-		const finalNewSize = size(this._transformBitmapSize(newSize, this._canvasElementClientSize));
+		const transformedBitmapSize = this._transformBitmapSize(newSize, this._canvasElementClientSize);
+		if (transformedBitmapSize === null) {
+			return;
+		}
+
+		const finalNewSize = size(transformedBitmapSize);
+
 		const newSuggestedSize = equalSizes(this.bitmapSize, finalNewSize) ? null : finalNewSize;
 
 		if (oldSuggestedSize === null && newSuggestedSize === null) {
