@@ -6,6 +6,6 @@
   "type": "module",
   "dependencies": {
     "fancy-canvas": "file:../dist/fancy-canvas",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.2"
   }
 }
