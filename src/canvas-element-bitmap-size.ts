@@ -3,12 +3,17 @@ import { equalSizes, Size, size } from './size.js';
 import { BehaviorSubject } from './rx.js';
 import { createObservable as createDevicePixelRatioObservable } from './device-pixel-ratio.js';
 
-export type BitmapSizeChangedListener = (this: Binding, oldSize: Size, newSize: Size) => void;
+export type BitmapSizeChangedListener = (this: Binding<any>, oldSize: Size, newSize: Size) => void;
 export type BitmapSizeTransformer = (bitmapSize: Size, canvasElementClientSize: Size) => { width: number, height: number };
-export type SuggestedBitmapSizeChangedListener = (this: Binding, oldSize: Size | null, newSize: Size | null) => void;
+export type SuggestedBitmapSizeChangedListener = (this: Binding<any>, oldSize: Size | null, newSize: Size | null) => void;
+export type SetOffscreenBitmapSize = (bitmapSize: Size) => void;
 
-export interface Binding extends Disposable {
+export type Canvas2DContext<OffscreenAllowed extends boolean> = OffscreenAllowed extends true ? CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D : CanvasRenderingContext2D;
+export type Canvas<OffscreenAllowed extends boolean> = OffscreenAllowed extends true ? OffscreenCanvas | HTMLCanvasElement : HTMLCanvasElement;
+
+export interface Binding<OffscreenAllowed extends boolean = any> extends Disposable {
 	readonly canvasElement: HTMLCanvasElement;
+	readonly canvas: Canvas<OffscreenAllowed>;
 	/**
 	 * Canvas element client size in CSS pixels
 	 */
@@ -23,17 +28,29 @@ export interface Binding extends Disposable {
 	subscribeSuggestedBitmapSizeChanged(listener: SuggestedBitmapSizeChangedListener): void;
 	unsubscribeSuggestedBitmapSizeChanged(listener: SuggestedBitmapSizeChangedListener): void;
 	applySuggestedBitmapSize(): void;
+
+	get2DContext(contextOptions?: CanvasRenderingContext2DSettings): Canvas2DContext<OffscreenAllowed> | null;
+
+	readonly usingOffscreenCanvas: boolean;
+	requestOffscreenCanvas(): OffscreenCanvas | null;
+	releaseOffscreenCanvas(canvas: OffscreenCanvas): void;
 }
 
 export interface DevicePixelContentBoxBindingTargetOptions {
 	allowResizeObserver?: boolean;
+	/**
+	 * If `true` fancy canvas will attempt to use OffscreenCanvas
+	 * (if supported by the browser).
+	 */
+	allowOffscreenCanvas?: boolean;
 }
 
-class DevicePixelContentBoxBinding implements Binding, Disposable {
+class DevicePixelContentBoxBinding<OffscreenAllowed extends boolean> implements Binding<OffscreenAllowed>, Disposable {
 	private readonly _transformBitmapSize: BitmapSizeTransformer;
 	private readonly _allowResizeObserver: boolean;
 
 	private _canvasElement: HTMLCanvasElement | null = null;
+	private _offscreenCanvas: OffscreenCanvas | null = null;
 	private _canvasElementClientSize: Size;
 	private _bitmapSizeChangedListeners: BitmapSizeChangedListener[] = [];
 	private _suggestedBitmapSize: Size | null = null;
@@ -42,14 +59,27 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 	private _devicePixelRatioObservable: BehaviorSubject<number> & Disposable | null = null;
 	// ResizeObserver approach
 	private _canvasElementResizeObserver: ResizeObserver | null = null;
+	private _offscreenCanvasDetached: boolean = false;
+	private _offscreenCanvasSize: Size | null = null;
+	private _setOffscreenCanvasSize: SetOffscreenBitmapSize | null = null;
 
-	public constructor(canvasElement: HTMLCanvasElement, transformBitmapSize?: BitmapSizeTransformer, options?: DevicePixelContentBoxBindingTargetOptions) {
+	public constructor(
+		canvasElement: HTMLCanvasElement,
+		transformBitmapSize?: BitmapSizeTransformer,
+		options?: DevicePixelContentBoxBindingTargetOptions,
+		setOffscreenCanvasSize?: SetOffscreenBitmapSize,
+	) {
+		this._offscreenCanvas =
+			options?.allowOffscreenCanvas && isOffscreenCanvasSupported()
+				? canvasElement.transferControlToOffscreen()
+				: null;
 		this._canvasElement = canvasElement;
 		this._canvasElementClientSize = size({
 			width: this._canvasElement.clientWidth,
 			height: this._canvasElement.clientHeight,
 		});
 		this._transformBitmapSize = transformBitmapSize ?? (size => size);
+		this._setOffscreenCanvasSize = setOffscreenCanvasSize ?? null;
 		this._allowResizeObserver = options?.allowResizeObserver ?? true;
 
 		this._chooseAndInitObserver();
@@ -67,6 +97,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		this._suggestedBitmapSizeChangedListeners.length = 0;
 		this._bitmapSizeChangedListeners.length = 0;
 		this._canvasElement = null;
+		this._offscreenCanvas = null;
 	}
 
 	public get canvasElement(): HTMLCanvasElement {
@@ -76,14 +107,39 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		return this._canvasElement;
 	}
 
+	public get canvas(): Canvas<OffscreenAllowed> {
+		if (this._offscreenCanvas !== null) {
+			return this._offscreenCanvas as Canvas<OffscreenAllowed>;
+		}
+		if (this._canvasElement !== null) {
+			return this._canvasElement;
+		}
+		throw new Error('Object is disposed');
+	}
+
+	public get2DContext(contextOptions?: CanvasRenderingContext2DSettings): Canvas2DContext<OffscreenAllowed> | null {
+		const offscreenContext = this._offscreenCanvas?.getContext('2d', contextOptions) ?? null;
+		if (offscreenContext !== null) {
+			return offscreenContext as Canvas2DContext<OffscreenAllowed>;
+		}
+		return this._canvasElement?.getContext('2d', contextOptions) ?? null;
+	}
+
 	public get canvasElementClientSize(): Size {
 		return this._canvasElementClientSize;
 	}
 
 	public get bitmapSize(): Size {
+		if (this._offscreenCanvasDetached) {
+			if (!this._offscreenCanvasSize) {
+				throw new Error('Size of detached offscreen canvas unknown.');
+			}
+			return this._offscreenCanvasSize;
+		}
+
 		return size({
-			width: this.canvasElement.width,
-			height: this.canvasElement.height,
+			width: this.canvas.width,
+			height: this.canvas.height,
 		});
 	}
 
@@ -131,14 +187,48 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		this._emitSuggestedBitmapSizeChanged(oldSuggestedSize, this._suggestedBitmapSize);
 	}
 
+	public get usingOffscreenCanvas(): boolean {
+		return Boolean(this._offscreenCanvas);
+	}
+
+	public requestOffscreenCanvas(): OffscreenCanvas | null {
+		if (!this.usingOffscreenCanvas) {
+			throw new Error('Not using OffscreenCanvas.');
+		}
+		if (this._offscreenCanvasDetached) {
+			throw new Error('OffscreenCanvas already detached.');
+		}
+
+		this._offscreenCanvasSize = this.bitmapSize;
+		this._offscreenCanvasDetached = true;
+
+		return this._offscreenCanvas;
+	}
+
+	public releaseOffscreenCanvas(canvas: OffscreenCanvas): void {
+		if (canvas === this._offscreenCanvas) {
+			this._offscreenCanvasDetached = false;
+		}
+	}
+
 	private _resizeBitmap(newSize: Size): void {
 		const oldSize = this.bitmapSize;
 		if (equalSizes(oldSize, newSize)) {
 			return;
 		}
 
-		this.canvasElement.width = newSize.width;
-		this.canvasElement.height = newSize.height;
+		if (this._offscreenCanvasDetached) {
+			// Since the canvas has been transferred to a worker,
+			// the worker needs to change the size, so we are
+			// passing the value to the setOffscreenCanvasSize function
+			// which is expected to postMessage to the worker.
+			this._setOffscreenCanvasSize?.(newSize);
+			this._offscreenCanvasSize = newSize;
+		} else {
+			this.canvas.width = newSize.width;
+			this.canvas.height = newSize.height;
+		}
+
 		this._emitBitmapSizeChanged(oldSize, newSize);
 	}
 
@@ -247,11 +337,19 @@ export type BindingTarget = {
 	type: 'device-pixel-content-box';
 	transform?: BitmapSizeTransformer;
 	options?: DevicePixelContentBoxBindingTargetOptions;
+	setOffscreenCanvasSize?: SetOffscreenBitmapSize;
 };
 
-export function bindTo(canvasElement: HTMLCanvasElement, target: BindingTarget): Binding {
+export function bindTo<T extends BindingTarget>(
+	canvasElement: HTMLCanvasElement,
+	target: T,
+): Binding<T['options'] extends { allowOffscreenCanvas: true } ? true : false> {
 	if (target.type === 'device-pixel-content-box') {
-		return new DevicePixelContentBoxBinding(canvasElement, target.transform, target.options);
+		return new DevicePixelContentBoxBinding(
+			canvasElement,
+			target.transform,
+			target.options,
+		);
 	}
 
 	throw new Error('Unsupported binding target');
@@ -273,6 +371,10 @@ function isDevicePixelContentBoxSupported(): Promise<boolean> {
 		ro.observe(document.body, { box: 'device-pixel-content-box' });
 	})
 		.catch(() => false);
+}
+
+function isOffscreenCanvasSupported(): boolean {
+	return 'OffscreenCanvas' in window;
 }
 
 function predictedBitmapSize(canvasRect: DOMRect, ratio: number): Size {

@@ -5,7 +5,7 @@ import { Binding as CanvasElementBitmapSizeBinding } from './canvas-element-bitm
  * @experimental
  */
 export interface MediaCoordinatesRenderingScope {
-	readonly context: CanvasRenderingContext2D;
+	readonly context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 	readonly mediaSize: Size;
 }
 
@@ -13,7 +13,7 @@ export interface MediaCoordinatesRenderingScope {
  * @experimental
  */
 export interface BitmapCoordinatesRenderingScope {
-	readonly context: CanvasRenderingContext2D;
+	readonly context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 	readonly mediaSize: Size;
 	readonly bitmapSize: Size;
 	readonly horizontalPixelRatio: number;
@@ -24,11 +24,11 @@ export interface BitmapCoordinatesRenderingScope {
  * @experimental
  */
 export class CanvasRenderingTarget2D {
-	private readonly _context: CanvasRenderingContext2D;
+	private readonly _context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 	private readonly _mediaSize: Size;
 	private readonly _bitmapSize: Size;
 
-	public constructor(context: CanvasRenderingContext2D, mediaSize: Size, bitmapSize: Size) {
+	public constructor(context: CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D, mediaSize: Size, bitmapSize: Size) {
 		if (mediaSize.width === 0 || mediaSize.height === 0) {
 			throw new TypeError('Rendering target could only be created on a media with positive width and height');
 		}
@@ -84,16 +84,18 @@ export class CanvasRenderingTarget2D {
 	}
 }
 
+export type CanvasRenderingTargetBinding = Pick<CanvasElementBitmapSizeBinding<any>, 'canvasElementClientSize' | 'bitmapSize' | 'get2DContext'>;
+
 /**
  * @experimental
  */
 export function createCanvasRenderingTarget2D(
-	binding: CanvasElementBitmapSizeBinding,
+	binding: CanvasRenderingTargetBinding,
 	contextOptions?: CanvasRenderingContext2DSettings,
 ): CanvasRenderingTarget2D {
 	const mediaSize = binding.canvasElementClientSize;
 	const bitmapSize = binding.bitmapSize;
-	const context = binding.canvasElement.getContext('2d', contextOptions);
+	const context = binding.get2DContext(contextOptions);
 	if (context === null) {
 		throw new Error('Could not get 2d drawing context from bound canvas element. Has the canvas already been set to a different context mode?');
 	}
@@ -105,7 +107,7 @@ export function createCanvasRenderingTarget2D(
  * @experimental
  */
 export function tryCreateCanvasRenderingTarget2D(
-	binding: CanvasElementBitmapSizeBinding,
+	binding: CanvasRenderingTargetBinding,
 	contextOptions?: CanvasRenderingContext2DSettings,
 ): CanvasRenderingTarget2D | null {
 	const mediaSize = binding.canvasElementClientSize;
@@ -118,7 +120,7 @@ export function tryCreateCanvasRenderingTarget2D(
 		return null;
 	}
 
-	const context = binding.canvasElement.getContext('2d', contextOptions);
+	const context = binding.get2DContext(contextOptions);
 	if (context === null) {
 		return null;
 	}
