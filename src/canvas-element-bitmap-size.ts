@@ -175,11 +175,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		}
 
 		isDevicePixelContentBoxSupported()
-			.then(isSupported =>
-				isSupported?
-					this._initResizeObserver() :
-					this._initDevicePixelRatioObservable()
-			);
+			.then(isSupported => isSupported ? this._initResizeObserver() : this._initDevicePixelRatioObservable());
 	}
 
 	// devicePixelRatio approach

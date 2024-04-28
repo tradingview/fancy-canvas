@@ -89,7 +89,7 @@ export class CanvasRenderingTarget2D {
  */
 export function createCanvasRenderingTarget2D(
 	binding: CanvasElementBitmapSizeBinding,
-	contextOptions?: CanvasRenderingContext2DSettings
+	contextOptions?: CanvasRenderingContext2DSettings,
 ): CanvasRenderingTarget2D {
 	const mediaSize = binding.canvasElementClientSize;
 	const bitmapSize = binding.bitmapSize;
@@ -106,7 +106,7 @@ export function createCanvasRenderingTarget2D(
  */
 export function tryCreateCanvasRenderingTarget2D(
 	binding: CanvasElementBitmapSizeBinding,
-	contextOptions?: CanvasRenderingContext2DSettings
+	contextOptions?: CanvasRenderingContext2DSettings,
 ): CanvasRenderingTarget2D | null {
 	const mediaSize = binding.canvasElementClientSize;
 	if (mediaSize.width === 0 || mediaSize.height === 0) {
