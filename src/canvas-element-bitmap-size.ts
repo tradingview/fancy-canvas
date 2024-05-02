@@ -349,6 +349,7 @@ export function bindTo<T extends BindingTarget>(
 			canvasElement,
 			target.transform,
 			target.options,
+			target.setOffscreenCanvasSize,
 		);
 	}
 

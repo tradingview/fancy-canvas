@@ -1,0 +1,9 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"moduleResolution": "NodeNext",
+		"outDir": "../../bin/offscreen",
+		"lib": ["dom", "es2020"],
+		"module": "NodeNext"
+	}
+}
