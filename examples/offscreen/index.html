@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Fancy Canvas - Offscreen Demo</title>
+		<link rel="stylesheet" href="index.css" />
+	</head>
+	<body>
+		<div>
+			<h2 id="header">Offscreen demos</h2>
+		</div>
+		<div class="actions">
+			<button id="start-button">Start</button>
+			<button id="pause-button">Pause</button>
+			<button id="task-button">Long Task on Main Thread</button>
+		</div>
+		<div id="content">
+			<div class="example" style="--example-color: #f23645">
+				<h3>Offscreen Disabled</h3>
+				<canvas
+					id="offscreen-canvas-disabled"
+					class="example-canvas"
+				></canvas>
+			</div>
+			<div class="example" style="--example-color: #2962ff">
+				<h3>Offscreen Main Thread</h3>
+				<canvas
+					id="offscreen-canvas-main"
+					class="example-canvas"
+				></canvas>
+			</div>
+			<div class="example" style="--example-color: #089981">
+				<h3>Offscreen Worker Thread</h3>
+				<canvas
+					id="offscreen-canvas-worker"
+					class="example-canvas"
+				></canvas>
+			</div>
+		</div>
+	</body>
+	<script src="index.js"></script>
+</html>

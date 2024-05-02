@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "rollup -c && rollup -c rollup-worker.config.mjs && copyfiles *.html *.css ../../bin/offscreen"
+  },
+  "dependencies": {
+    "fancy-canvas": "file:../../dist/fancy-canvas"
+  },
+  "type": "module"
+}

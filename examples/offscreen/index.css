@@ -1,0 +1,40 @@
+body {
+	font-family: -apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto,
+		Ubuntu, sans-serif;
+}
+
+#header,
+#content,
+.actions {
+	max-width: 680px;
+	margin: 0 auto;
+}
+
+.actions {
+	display: flex;
+	flex-direction: row;
+	gap: 12px;
+	margin-block: 12px;
+}
+
+#header {
+	font-size: 36px;
+	width: 100%;
+}
+
+#content {
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
+}
+
+.example h3 {
+	color: var(--example-color);
+	margin: 12px 0;
+}
+
+.example-canvas {
+	border: 2px solid var(--example-color);
+	height: 150px;
+	width: 100%;
+}

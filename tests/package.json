@@ -1,10 +1,11 @@
 {
   "private": true,
   "scripts": {
-    "start": "npm start --prefix node-commonjs && npm start --prefix node-esmodules"
+    "start": "npm start --prefix node-esmodules"
   },
+  "type": "module",
   "dependencies": {
     "fancy-canvas": "file:../dist/fancy-canvas",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.2"
   }
 }

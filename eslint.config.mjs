@@ -35,6 +35,7 @@ export default [
 			'lines-around-comment': 'off',
 			'lines-between-class-members': 'off',
 			'max-len': 'off',
+			'max-lines': 'off',
 			'max-statements': 'off',
 			'multiline-comment-style': 'off',
 			'multiline-ternary': 'off',
