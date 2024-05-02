@@ -18,11 +18,12 @@ class BouncingBall<T extends boolean> {
 	private _model: BouncingBallModel | undefined = undefined;
 	private _workerThread: Worker | undefined;
 
+	// eslint-disable-next-line max-params
 	public constructor(
 		container: HTMLCanvasElement,
 		color: string,
 		offscreen: T,
-		worker: boolean
+		worker: boolean,
 	) {
 		this._canvasHTMLElement = container;
 		this._color = color;
@@ -48,7 +49,8 @@ class BouncingBall<T extends boolean> {
 			for (const entry of entries) {
 				const { width } = entry.contentRect;
 				this._binding.resizeCanvasElement({
-					height: 150, // fixed height
+					// fixed height
+					height: 150,
 					width,
 				});
 			}
@@ -84,15 +86,15 @@ class BouncingBall<T extends boolean> {
 			this._binding.canvas,
 			this._color,
 			this._binding.bitmapSize,
-			this._binding.canvasElementClientSize
+			this._binding.canvasElementClientSize,
 		);
 		this._binding.subscribeBitmapSizeChanged(
 			(_oldSize: Size, newSize: Size) => {
 				this._model?.updateSize(
 					newSize,
-					this._binding.canvasElementClientSize
+					this._binding.canvasElementClientSize,
 				);
-			}
+			},
 		);
 	}
 
@@ -111,7 +113,7 @@ class BouncingBall<T extends boolean> {
 							this._binding.canvasElementClientSize,
 					} satisfies CreateWorkerMessageData,
 				},
-				[offscreenCanvas]
+				[offscreenCanvas],
 			);
 		}
 	}
@@ -131,13 +133,13 @@ class BouncingBall<T extends boolean> {
 }
 
 const disabledCanvas = document.querySelector<HTMLCanvasElement>(
-	'#offscreen-canvas-disabled'
+	'#offscreen-canvas-disabled',
 );
 const mainCanvas = document.querySelector<HTMLCanvasElement>(
-	'#offscreen-canvas-main'
+	'#offscreen-canvas-main',
 );
 const workerCanvas = document.querySelector<HTMLCanvasElement>(
-	'#offscreen-canvas-worker'
+	'#offscreen-canvas-worker',
 );
 const startButton = document.querySelector<HTMLButtonElement>('#start-button');
 const pauseButton = document.querySelector<HTMLButtonElement>('#pause-button');
@@ -155,7 +157,7 @@ if (
 		disabledCanvas,
 		'#F23645',
 		false,
-		false
+		false,
 	);
 	const mainBall = new BouncingBall(mainCanvas, '#2962ff', true, false);
 	const workerBall = new BouncingBall(workerCanvas, '#089981', true, true);

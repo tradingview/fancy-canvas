@@ -63,6 +63,7 @@ class DevicePixelContentBoxBinding<OffscreenAllowed extends boolean> implements 
 	private _offscreenCanvasSize: Size | null = null;
 	private _setOffscreenCanvasSize: SetOffscreenBitmapSize | null = null;
 
+	// eslint-disable-next-line max-params
 	public constructor(
 		canvasElement: HTMLCanvasElement,
 		transformBitmapSize?: BitmapSizeTransformer,

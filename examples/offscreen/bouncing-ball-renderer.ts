@@ -27,7 +27,7 @@ export class BouncingBallRenderer {
 					0,
 					0,
 					scope.mediaSize.width,
-					scope.mediaSize.height
+					scope.mediaSize.height,
 				);
 				scope.context.beginPath();
 				scope.context.arc(
@@ -35,11 +35,11 @@ export class BouncingBallRenderer {
 					this._position?.y ?? 0,
 					10,
 					0,
-					2 * Math.PI
+					2 * Math.PI,
 				);
 				scope.context.fillStyle = this._color;
 				scope.context.fill();
-			}
+			},
 		);
 	}
 }

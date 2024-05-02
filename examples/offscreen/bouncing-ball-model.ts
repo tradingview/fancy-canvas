@@ -23,11 +23,12 @@ export class BouncingBallModel {
 		y: 5,
 	};
 
+	// eslint-disable-next-line max-params
 	public constructor(
 		canvas: Canvas,
 		color: string,
 		size: Size,
-		mediaSize: Size
+		mediaSize: Size,
 	) {
 		this._canvas = canvas;
 		this._color = color;
@@ -40,7 +41,7 @@ export class BouncingBallModel {
 	public updateSize(
 		size: Size,
 		mediaSize: Size,
-		isOffscreen?: boolean
+		isOffscreen?: boolean,
 	): void {
 		this._size = size;
 		this._mediaSize = mediaSize;
@@ -68,14 +69,14 @@ export class BouncingBallModel {
 			this._velocity.x *= -1;
 			newPos.x = Math.min(
 				Math.max(10, newPos.x),
-				this._mediaSize.width - 10
+				this._mediaSize.width - 10,
 			);
 		}
 		if (newPos.y <= 10 || newPos.y >= this._mediaSize.height - 10) {
 			this._velocity.y *= -1;
 			newPos.y = Math.min(
 				Math.max(10, newPos.y),
-				this._mediaSize.height - 10
+				this._mediaSize.height - 10,
 			);
 		}
 		const target = createCanvasRenderingTarget2D({

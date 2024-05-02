@@ -12,20 +12,20 @@ export class WorkerHandler {
 		const { type, data } = e.data;
 
 		switch (type) {
-			case 'create-canvas':
-				this._create(data);
-				break;
-			case 'adjust-canvas-size':
-				this._adjustSize(data);
-				break;
-			case 'start':
-				this._start();
-				break;
-			case 'pause':
-				this._pause();
-				break;
-			default:
-				console.warn(`Unknown message type: ${type}`);
+		case 'create-canvas':
+			this._create(data);
+			break;
+		case 'adjust-canvas-size':
+			this._adjustSize(data);
+			break;
+		case 'start':
+			this._start();
+			break;
+		case 'pause':
+			this._pause();
+			break;
+		default:
+			console.warn(`Unknown message type: ${type}`);
 		}
 	}
 
@@ -34,7 +34,7 @@ export class WorkerHandler {
 			data.canvas,
 			data.color,
 			data.bitmapSize,
-			data.canvasElementClientSize
+			data.canvasElementClientSize,
 		);
 		self.postMessage('created');
 	}
@@ -65,4 +65,5 @@ export interface AdjustCanvasSizeMessage {
 }
 
 // self-start
+// eslint-disable-next-line no-new
 new WorkerHandler();
