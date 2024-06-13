@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "start": "npm start --prefix node-commonjs && npm start --prefix node-esmodules"
+    "start": "ts-node-esm index.mts"
   },
   "dependencies": {
     "fancy-canvas": "file:../dist/fancy-canvas",

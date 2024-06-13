@@ -3,5 +3,7 @@
 	"compilerOptions": {
 		"declaration": true,
 		"outDir": "../dist/fancy-canvas",
+		"module": "node16",
+		"moduleResolution": "node16"
 	}
 }

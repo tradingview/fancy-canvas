@@ -1,6 +1,8 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"lib": ["dom", "es2015"]
+		"lib": ["dom", "es2015"],
+		"module": "node16",
+		"moduleResolution": "node16"
 	}
 }
