@@ -49,7 +49,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 			width: this._canvasElement.clientWidth,
 			height: this._canvasElement.clientHeight,
 		});
-		this._transformBitmapSize = transformBitmapSize ?? (size => size);
+		this._transformBitmapSize = transformBitmapSize ?? (s => s);
 		this._allowResizeObserver = options?.allowResizeObserver ?? true;
 
 		this._chooseAndInitObserver();
@@ -232,7 +232,7 @@ class DevicePixelContentBoxBinding implements Binding, Disposable {
 		}
 
 		this._canvasElementResizeObserver = new ResizeObserver((entries: ResizeObserverEntry[]) => {
-			const entry = entries.find((entry: ResizeObserverEntry) => entry.target === this._canvasElement);
+			const entry = entries.find((resizeEntry: ResizeObserverEntry) => resizeEntry.target === this._canvasElement);
 			if (!entry || !entry.devicePixelContentBoxSize || !entry.devicePixelContentBoxSize[0]) {
 				return;
 			}

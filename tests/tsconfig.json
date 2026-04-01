@@ -1,6 +1,6 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"lib": ["dom", "es2015"]
+		"lib": ["dom", "es2020"]
 	}
 }

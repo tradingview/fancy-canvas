@@ -12,8 +12,9 @@ jobs:
       uses: volta-cli/action@v3
     - run: npm ci
     - run: npm run build
+    - run: npm run tests:init
     - run: npm run lint
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: dist
         path: dist
@@ -24,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [16, 18]
+        node-version: [24]
     steps:
       - uses: actions/checkout@v3
       - name: Setup Node.js ${{ matrix.node-version }}
@@ -32,7 +33,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - name: Download dist directory
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: dist
           path: dist
@@ -47,12 +48,12 @@ jobs:
       - name: Setup Volta and Node.js
         uses: volta-cli/action@v3
       - name: Download dist directory
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: dist
           path: dist
       - run: mkdir out && cd dist/fancy-canvas && npm pack --pack-destination ../../out
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: Package tarball
           path: out/fancy-canvas-${{ github.ref_name }}.tgz

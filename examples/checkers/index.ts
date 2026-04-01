@@ -144,17 +144,17 @@ function drawGrid({ context: ctx, bitmapSize, horizontalPixelRatio, verticalPixe
 	ctx.lineWidth = Math.max(1, Math.floor(horizontalPixelRatio));
 	const count = 10;
 	const a = 20;
-	const offset = (ctx.lineWidth % 2) ? 0.5 : 0;
+	const gridOffset = (ctx.lineWidth % 2) ? 0.5 : 0;
 	ctx.beginPath();
 	for (let y = 0; y < count; y++) {
-		const r = Math.round(y * a * verticalPixelRatio) + offset;
+		const r = Math.round(y * a * verticalPixelRatio) + gridOffset;
 		ctx.moveTo(0, r);
 		ctx.lineTo(bitmapSize.width, r);
 	}
 	ctx.stroke();
 	ctx.beginPath();
 	for (let x = 0; x < count; x++) {
-		const r = Math.round(x * a * horizontalPixelRatio) + offset;
+		const r = Math.round(x * a * horizontalPixelRatio) + gridOffset;
 		ctx.moveTo(r, 0);
 		ctx.lineTo(r, bitmapSize.height);
 	}
