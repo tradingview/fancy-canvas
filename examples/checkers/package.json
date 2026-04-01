@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "rollup -c && copyfiles *.html *.css ../../bin/checkers"
+    "build": "tsdown"
   },
   "dependencies": {
     "fancy-canvas": "file:../../dist/fancy-canvas"

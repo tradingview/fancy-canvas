@@ -13,11 +13,10 @@
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
 		"sourceMap": false,
-		"target": "es5",
+		"target": "es2020",
+		"moduleResolution": "bundler",
 		"lib": [
-			"es5",
-			"es2015",
-			"es2015.symbol.wellknown",
+			"es2020",
 			"dom"
 		]
 	}

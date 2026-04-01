@@ -6,33 +6,24 @@
     "examples:build": "npm run build --prefix examples/checkers",
     "tests:init": "cd tests && npm install",
     "test": "npm run tests:init && npm start --prefix tests",
-    "lint": "npm run lint:ec && npm run lint:eslint",
+    "lint": "npm run lint:ec && npm run lint:es",
     "lint:ec": "ec",
-    "lint:eslint": "cross-env ESLINT_USE_FLAT_CONFIG=true eslint -c eslint.config.mjs ."
+    "lint:es": "oxlint ."
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^16.0.3",
-    "@rollup/plugin-typescript": "^12.3.0",
-    "@typescript-eslint/eslint-plugin": "^5.42.0",
-    "@typescript-eslint/parser": "^5.42.0",
-    "copyfiles": "2.4.1",
-    "cross-env": "^10.1.0",
     "editorconfig-checker": "^6.1.1",
-    "eslint": "^8.26.0",
-    "globals": "^17.4.0",
-    "replace-ext": "^2.0.0",
-    "rollup": "^3.30.0",
-    "ts-transform-import-path-rewrite": "^0.3.0",
-    "ttypescript": "^1.5.15",
-    "typescript": "4.8.4"
+    "oxlint": "^1.58.0",
+    "oxlint-tsgolint": "^0.19.0",
+    "tsdown": "^0.21.7",
+    "typescript": "6.0.2"
   },
   "private": true,
   "engines": {
-    "node": ">=16.18.0",
-    "npm": ">=8.19.2"
+    "node": ">=24.11.0",
+    "npm": ">=11.6.1"
   },
   "volta": {
-    "node": "16.18.0",
-    "npm": "8.19.2"
+    "node": "24.11.0",
+    "npm": "11.6.1"
   }
 }

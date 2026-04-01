@@ -1,0 +1,39 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"plugins": [],
+	"categories": {
+		"correctness": "error",
+		"perf": "error",
+		"suspicious": "warn"
+	},
+	"options": {
+		"typeAware": true,
+		"typeCheck": true
+	},
+	"env": {
+		"builtin": true,
+		"node": true
+	},
+	"ignorePatterns": ["bin/**", "dist/**"],
+	"rules": {
+		"func-style": ["error", "declaration"]
+	},
+	"overrides": [
+		{
+			"files": ["**/*.ts", "**/*.mts"],
+			"rules": {
+				"no-unused-vars": "error",
+				"no-use-before-define": [
+					"error",
+					{
+						"functions": false
+					}
+				]
+			},
+			"env": {
+				"es2022": true
+			},
+			"plugins": ["typescript"]
+		}
+	]
+}
