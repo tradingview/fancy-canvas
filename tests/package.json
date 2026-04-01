@@ -3,9 +3,6 @@
   "scripts": {
     "start": "npm start --prefix node-esmodules"
   },
-  "devDependencies": {
-    "typescript": "4.8.4"
-  },
   "dependencies": {
     "fancy-canvas": "file:../dist/fancy-canvas"
   }
